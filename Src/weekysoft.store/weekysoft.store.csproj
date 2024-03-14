@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Users\Admin\Desktop\RE\NetChatWP8\weekysoft.store.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{ABFD62C7-A151-4B18-8ADE-69DD1C2524FA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>weekysoft.store</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <ApplicationVersion>2.0.6272.32043</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>weekysoft.store</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Sockets.Plugin">
+      <HintPath>lib\Sockets.Plugin.dll</HintPath>
+    </Reference>
+    <Reference Include="Sockets.Plugin.Abstractions">
+      <HintPath>lib\Sockets.Plugin.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections" />
+    <Reference Include="System.Diagnostics.Debug" />
+    <Reference Include="System.IO" />
+    <Reference Include="System.Linq" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.ObjectModel" />
+    <Reference Include="System.Reflection" />
+    <Reference Include="System.Reflection.Extensions" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.Extensions" />
+    <Reference Include="System.Runtime.Serialization.Json" />
+    <Reference Include="System.Runtime.Serialization.Primitives" />
+    <Reference Include="System.Text.Encoding" />
+    <Reference Include="System.Text.RegularExpressions" />
+    <Reference Include="System.Threading" />
+    <Reference Include="System.Threading.Tasks" />
+    <Reference Include="System.Threading.Timer" />
+    <Reference Include="System.Xml.XmlSerializer" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Util\Base64Util.cs" />
+    <Compile Include="Util\Frequency.cs" />
+    <Compile Include="Util\HttpUtility.cs" />
+    <Compile Include="Util\HttpValue.cs" />
+    <Compile Include="Util\HttpValueCollection.cs" />
+    <Compile Include="Util\ImageUtil.cs" />
+    <Compile Include="Storage\ClientData.cs" />
+    <Compile Include="Storage\Setting.cs" />
+    <Compile Include="Serializer\BinarySerialization.cs" />
+    <Compile Include="Serializer\JsonSerialization.cs" />
+    <Compile Include="Serializer\XmlSerialization.cs" />
+    <Compile Include="Messaging\DatagramEventArgs.cs" />
+    <Compile Include="Messaging\ErrorEventArgs.cs" />
+    <Compile Include="Messaging\ErrorType.cs" />
+    <Compile Include="Messaging\IMessaging.cs" />
+    <Compile Include="Messaging\IPAddressHelper.cs" />
+    <Compile Include="Messaging\MessageEventArgs.cs" />
+    <Compile Include="Messaging\MessageStatus.cs" />
+    <Compile Include="Messaging\MessageType.cs" />
+    <Compile Include="Messaging\MessagingStatus.cs" />
+    <Compile Include="Messaging\RelayMessaging.cs" />
+    <Compile Include="Messaging\SuperChannel.cs" />
+    <Compile Include="Messaging\UdpMessaging.cs" />
+    <Compile Include="Messaging\ReliableMessaging.cs" />
+    <Compile Include="Interfaces\IIPAddressManager.cs" />
+    <Compile Include="Interfaces\IPlatformFeature.cs" />
+    <Compile Include="Interfaces\IRateApp.cs" />
+    <Compile Include="Interfaces\ITextToSpeech.cs" />
+    <Compile Include="Interfaces\ILocalSetting.cs" />
+    <Compile Include="Enums\CommentType.cs" />
+    <Compile Include="Enums\VoiceType.cs" />
+    <Compile Include="Enums\EnumExt.cs" />
+    <Compile Include="Enums\EnumHelper.cs" />
+    <Compile Include="Chatting\ChatMessage.cs" />
+    <Compile Include="Chatting\ChatElement.cs" />
+    <Compile Include="Chatting\ChatHeader.cs" />
+    <Compile Include="Chatting\ElementType.cs" />
+    <Compile Include="Chatting\Gender.cs" />
+    <Compile Include="Chatting\IChatElement.cs" />
+    <Compile Include="ChatRoom\ChatLabel.cs" />
+    <Compile Include="ChatRoom\Member.cs" />
+    <Compile Include="ChatRoom\MemberEventArgs.cs" />
+    <Compile Include="ChatRoom\Peer.cs" />
+    <Compile Include="ChatRoom\MemberAction.cs" />
+    <Compile Include="ChatRoom\PeerEventArgs.cs" />
+    <Compile Include="ChatRoom\Room.cs" />
+    <Compile Include="ChatRoom\RoomEventArgs.cs" />
+    <Compile Include="ChatRoom\RoomType.cs" />
+    <Compile Include="ChatRoom\SignalStat.cs" />
+    <Compile Include="ChatRoom\Site.cs" />
+    <Compile Include="Bots\BingNewsBot.cs" />
+    <Compile Include="Bots\BingSearchBot.cs" />
+    <Compile Include="Bots\Bot.cs" />
+    <Compile Include="Bots\DuckDuckGoBot.cs" />
+    <Compile Include="Bots\GoogleSearchBot.cs" />
+    <Compile Include="Bots\IBot.cs" />
+    <Compile Include="Bots\Language.cs" />
+    <Compile Include="Bots\PearsonBot.cs" />
+    <Compile Include="Bots\QnABot.cs" />
+    <Compile Include="Bots\ReceptionistBot.cs" />
+    <Compile Include="Bots\SearchResult.cs" />
+    <Compile Include="Bots\StockBot.cs" />
+    <Compile Include="Bots\WikinewsBot.cs" />
+    <Compile Include="Attributes\DisplayName.cs" />
+    <Compile Include="Attributes\EntityKey.cs" />
+    <Compile Include="Attributes\EntityName.cs" />
+    <Compile Include="Attributes\EntityType.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

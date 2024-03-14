@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Users\Admin\Desktop\RE\NetChatWP8\Coding4Fun.Toolkit.Controls.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BEB7516E-31BD-472E-8FD9-0F0E2CB5B383}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Coding4Fun.Toolkit.Controls</AssemblyName>
+    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
+    <ApplicationVersion>2.1.7.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>Coding4Fun.Toolkit.Controls</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Coding4Fun.Toolkit">
+      <HintPath>lib\Coding4Fun.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections" />
+    <Reference Include="System.Diagnostics.Debug" />
+    <Reference Include="System.Diagnostics.Tools" />
+    <Reference Include="System.Globalization" />
+    <Reference Include="System.Linq" />
+    <Reference Include="System.ObjectModel" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.Extensions" />
+    <Reference Include="System.Runtime.InteropServices.WindowsRuntime" />
+    <Reference Include="System.Runtime.WindowsRuntime" />
+    <Reference Include="System.Runtime.WindowsRuntime.UI.Xaml" />
+    <Reference Include="System.Text.RegularExpressions" />
+    <Reference Include="System.Threading" />
+    <Reference Include="System.Threading.Tasks" />
+    <Reference Include="System.Xml.ReaderWriter" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Clarity\Phone\Extensions\DialogService.cs" />
+    <Compile Include="ButtonBase.cs" />
+    <Compile Include="ButtonBaseHelper.cs" />
+    <Compile Include="IButtonBase.cs" />
+    <Compile Include="IAppBarButton.cs" />
+    <Compile Include="ButtonBaseConstants.cs" />
+    <Compile Include="ImageTile.cs" />
+    <Compile Include="ImageTileAnimationTypes.cs" />
+    <Compile Include="ImageTileLayoutStates.cs" />
+    <Compile Include="ImageTileState.cs" />
+    <Compile Include="OpacityToggleButton.cs" />
+    <Compile Include="RectangularButton.cs" />
+    <Compile Include="RoundButton.cs" />
+    <Compile Include="RoundToggleButton.cs" />
+    <Compile Include="Tile.cs" />
+    <Compile Include="TileNotification.cs" />
+    <Compile Include="ToggleButtonBase.cs" />
+    <Compile Include="ChatBubble.cs" />
+    <Compile Include="ChatBubbleDirection.cs" />
+    <Compile Include="ChatBubbleTextBox.cs" />
+    <Compile Include="ColorBaseControl.cs" />
+    <Compile Include="ColorHexagonPicker.cs" />
+    <Compile Include="ColorPicker.cs" />
+    <Compile Include="ColorSlider.cs" />
+    <Compile Include="ColorSliderThumb.cs" />
+    <Compile Include="DevelopmentHelpers.cs" />
+    <Compile Include="MovementMonitor.cs" />
+    <Compile Include="MovementMonitorEventArgs.cs" />
+    <Compile Include="Numbers.cs" />
+    <Compile Include="TemplatedVisualTreeExtensions.cs" />
+    <Compile Include="VisualTreeExtensions.cs" />
+    <Compile Include="MetroFlow.cs" />
+    <Compile Include="MetroFlowData.cs" />
+    <Compile Include="MetroFlowItem.cs" />
+    <Compile Include="SelectionTapEventArgs.cs" />
+    <Compile Include="ProgressOverlay.cs" />
+    <Compile Include="PropertyChangedEventArgs`1.cs" />
+    <Compile Include="SuperImage.cs" />
+    <Compile Include="SuperImageSource.cs" />
+    <Compile Include="SuperSlider.cs" />
+    <Compile Include="AboutPrompt.cs" />
+    <Compile Include="AboutPromptItem.cs" />
+    <Compile Include="ActionPopUp`2.cs" />
+    <Compile Include="InputPrompt.cs" />
+    <Compile Include="MessagePrompt.cs" />
+    <Compile Include="PasswordInputPrompt.cs" />
+    <Compile Include="PopUp`2.cs" />
+    <Compile Include="PopUpEventArgs`2.cs" />
+    <Compile Include="PopUpResult.cs" />
+    <Compile Include="ToastPrompt.cs" />
+    <Compile Include="UserPrompt.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlMetaDataProvider.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlTypeInfoProvider.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlSystemBaseType.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\Activator.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\AddToCollection.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\AddToDictionary.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlUserType.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\Getter.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\Setter.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlMember.cs" />
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\NumberMultiplierConverter.cs" />
+    <Compile Include="Converters\SolidColorBrushToColorConverter.cs" />
+    <Compile Include="Converters\StringToVisibilityConverter.cs" />
+    <Compile Include="Converters\ThemedImageConverter.cs" />
+    <Compile Include="Converters\ThemedImageConverterHelper.cs" />
+    <Compile Include="Converters\ThemedInverseImageConverter.cs" />
+    <Compile Include="Converters\ThicknessProperties.cs" />
+    <Compile Include="Converters\ThicknessToGridLengthConverter.cs" />
+    <Compile Include="Converters\ValueConverter.cs" />
+    <Compile Include="Converters\VisibilityToBooleanConverter.cs" />
+    <Compile Include="Common\ApplicationSpace.cs" />
+    <Compile Include="Common\ColorExtensions.cs" />
+    <Compile Include="Common\HSV.cs" />
+    <Compile Include="Common\ColorSpace.cs" />
+    <Compile Include="Common\ControlHelper.cs" />
+    <Compile Include="Common\DoubleExtensions.cs" />
+    <Compile Include="Common\FloatExtensions.cs" />
+    <Compile Include="Common\IImageSource.cs" />
+    <Compile Include="Common\IImageSourceFull.cs" />
+    <Compile Include="Common\ImageSourceExtensions.cs" />
+    <Compile Include="Common\IntExtensions.cs" />
+    <Compile Include="Common\ManifestHelper.cs" />
+    <Compile Include="Common\SafeDispatcher.cs" />
+    <Compile Include="Common\TimeSpanExtensions.cs" />
+    <Compile Include="Binding\FrameworkElementBinding.cs" />
+    <Compile Include="Binding\PreventScrollBinding.cs" />
+    <Compile Include="Binding\TextBinding.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
