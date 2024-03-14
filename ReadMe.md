@@ -1,7 +1,7 @@
 # NetChat
 
-NetChat - wp8 branch
+NetChat - uwp branch
 
-My own NetChat mini-research =)
+My own netchatuwp-3.5.3000.0.appx mini-research =)
 
 -- me 2024
