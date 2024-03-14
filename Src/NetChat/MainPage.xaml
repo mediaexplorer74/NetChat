@@ -1,0 +1,150 @@
+﻿<Page xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+      xmlns:local="using:IGM.UI" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      x:Class="IGM.UI.MainPage">
+    <!--Background>
+        <ThemeResource ResourceKey="ApplicationPageBackgroundThemeBrush" />
+    </Background-->
+    <!--Resources>
+        <ResourceDictionary>
+            <local:StringFormatConverter x:Key="StringFormat" />
+        </ResourceDictionary>
+    </Resources-->
+    <Grid>
+        <!--Background>
+            <ThemeResource ResourceKey="ApplicationPageBackgroundThemeBrush" />
+        </Background-->
+        <Children>
+            <UIElementCollection>
+                <Pivot Name="pvRoom" Title="Lobby">
+                    <HeaderTemplate>
+                        <DataTemplate>
+                            <Template>
+                                <TextBlock FontSize="35">
+                <Text>
+                    <Binding />
+                </Text>
+                                </TextBlock>
+                            </Template>
+                        </DataTemplate>
+                    </HeaderTemplate>
+                    <Items>
+                        <ItemCollection>
+                            <PivotItem Name="piChat" Header="Chat">
+                                <Content>
+                                    <Grid>
+                                        <RowDefinitions>
+                                            <RowDefinitionCollection>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                            </RowDefinitionCollection>
+                                        </RowDefinitions>
+                                        <ColumnDefinitions>
+                                            <ColumnDefinitionCollection>
+                                                <ColumnDefinition Width="*" />
+                                            </ColumnDefinitionCollection>
+                                        </ColumnDefinitions>
+                                        <Children>
+                                            <UIElementCollection>
+                                                <Grid Column="0" Row="0" Height="0" />
+                                                <Grid Column="0" Row="1">
+                                                    <Children>
+                                                        <UIElementCollection>
+                                                            <local:ChatBubblePanel />
+                                                        </UIElementCollection>
+                                                    </Children>
+                                                </Grid>
+                                            </UIElementCollection>
+                                        </Children>
+                                    </Grid>
+                                </Content>
+                            </PivotItem>
+                            <PivotItem Name="piPeers">
+                                <Header>
+                                    <Binding Path="Count" ConverterParameter="Peers ({0})">
+                                        <Converter>
+                                            <StaticResource ResourceKey="StringFormat" />
+                                        </Converter>
+                                    </Binding>
+                                </Header>
+                                <Content>
+                                    <Grid Margin="10,10,10,20">
+                                        <RowDefinitions>
+                                            <RowDefinitionCollection>
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                            </RowDefinitionCollection>
+                                        </RowDefinitions>
+                                        <Children>
+                                            <UIElementCollection>
+                                                <local:AttendeePanel Name="pnlPeers" Row="0" />
+                                                <TextBlock Text="Cannot see other peers? Install Netchat on other devices on the same Local/WIFI network." Row="1" HorizontalAlignment="Stretch" TextWrapping="WrapWholeWords" Foreground="Gray" />
+                                            </UIElementCollection>
+                                        </Children>
+                                    </Grid>
+                                </Content>
+                            </PivotItem>
+                            <PivotItem Name="piRooms">
+                                <Header>
+                                    <Binding Path="Count" ConverterParameter="Rooms ({0})">
+                                        <Converter>
+                                            <StaticResource ResourceKey="StringFormat" />
+                                        </Converter>
+                                    </Binding>
+                                </Header>
+                                <Content>
+                                    <Grid Margin="10,10,10,20">
+                                        <Children>
+                                            <UIElementCollection>
+                                                <local:RoomPanel Name="pnlRooms" />
+                                            </UIElementCollection>
+                                        </Children>
+                                    </Grid>
+                                </Content>
+                            </PivotItem>
+                            <PivotItem Name="piFeedback" Header="Comments">
+                                <Content>
+                                    <Grid Margin="10,10,10,20">
+                                        <Children>
+                                            <UIElementCollection>
+                                                <local:FeedbackUC />
+                                            </UIElementCollection>
+                                        </Children>
+                                    </Grid>
+                                </Content>
+                            </PivotItem>
+                            <PivotItem Header="About">
+                                <Content>
+                                    <Grid Margin="10,10,10,20">
+                                        <Children>
+                                            <UIElementCollection>
+                                                <local:About />
+                                            </UIElementCollection>
+                                        </Children>
+                                    </Grid>
+                                </Content>
+                            </PivotItem>
+                        </ItemCollection>
+                    </Items>
+                </Pivot>
+            </UIElementCollection>
+        </Children>
+    </Grid>
+</Page>
+
+    <!--Page
+    x:Class="IGM.UI.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IGM.UI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+
+    </Grid>
+</Page-->

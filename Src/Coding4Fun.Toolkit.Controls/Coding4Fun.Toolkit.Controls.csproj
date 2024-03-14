@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6DCB4564-B261-4A28-98DC-6890F6B05686}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Coding4Fun.Toolkit.Controls</RootNamespace>
+    <AssemblyName>Coding4Fun.Toolkit.Controls</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.19041.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
+    <PlatformTarget>ARM64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
+    <PlatformTarget>ARM64</PlatformTarget>
+    <OutputPath>bin\ARM64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AboutPrompt.cs" />
+    <Compile Include="AboutPromptItem.cs" />
+    <Compile Include="ActionPopUp`2.cs" />
+    <Compile Include="Binding\FrameworkElementBinding.cs" />
+    <Compile Include="Binding\PreventScrollBinding.cs" />
+    <Compile Include="Binding\TextBinding.cs" />
+    <Compile Include="ButtonBase.cs" />
+    <Compile Include="ButtonBaseConstants.cs" />
+    <Compile Include="ButtonBaseHelper.cs" />
+    <Compile Include="ChatBubble.cs" />
+    <Compile Include="ChatBubbleDirection.cs" />
+    <Compile Include="ChatBubbleTextBox.cs" />
+    <Compile Include="Clarity\Phone\Extensions\DialogService.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\Activator.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\AddToCollection.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\AddToDictionary.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\Getter.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\Setter.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlMember.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlMetaDataProvider.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlSystemBaseType.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlTypeInfoProvider.cs" />
+    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlUserType.cs" />
+    <Compile Include="ColorBaseControl.cs" />
+    <Compile Include="ColorHexagonPicker.cs" />
+    <Compile Include="ColorPicker.cs" />
+    <Compile Include="ColorSlider.cs" />
+    <Compile Include="ColorSliderThumb.cs" />
+    <Compile Include="Common\ApplicationSpace.cs" />
+    <Compile Include="Common\ColorExtensions.cs" />
+    <Compile Include="Common\ColorSpace.cs" />
+    <Compile Include="Common\ControlHelper.cs" />
+    <Compile Include="Common\DoubleExtensions.cs" />
+    <Compile Include="Common\FloatExtensions.cs" />
+    <Compile Include="Common\HSV.cs" />
+    <Compile Include="Common\IImageSource.cs" />
+    <Compile Include="Common\IImageSourceFull.cs" />
+    <Compile Include="Common\ImageSourceExtensions.cs" />
+    <Compile Include="Common\IntExtensions.cs" />
+    <Compile Include="Common\ManifestHelper.cs" />
+    <Compile Include="Common\SafeDispatcher.cs" />
+    <Compile Include="Common\TimeSpanExtensions.cs" />
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\NumberMultiplierConverter.cs" />
+    <Compile Include="Converters\SolidColorBrushToColorConverter.cs" />
+    <Compile Include="Converters\StringToVisibilityConverter.cs" />
+    <Compile Include="Converters\ThemedImageConverter.cs" />
+    <Compile Include="Converters\ThemedImageConverterHelper.cs" />
+    <Compile Include="Converters\ThemedInverseImageConverter.cs" />
+    <Compile Include="Converters\ThicknessProperties.cs" />
+    <Compile Include="Converters\ThicknessToGridLengthConverter.cs" />
+    <Compile Include="Converters\ValueConverter.cs" />
+    <Compile Include="Converters\VisibilityToBooleanConverter.cs" />
+    <Compile Include="DevelopmentHelpers.cs" />
+    <Compile Include="IAppBarButton.cs" />
+    <Compile Include="IButtonBase.cs" />
+    <Compile Include="ImageTile.cs" />
+    <Compile Include="ImageTileAnimationTypes.cs" />
+    <Compile Include="ImageTileLayoutStates.cs" />
+    <Compile Include="ImageTileState.cs" />
+    <Compile Include="InputPrompt.cs" />
+    <Compile Include="MessagePrompt.cs" />
+    <Compile Include="MetroFlow.cs" />
+    <Compile Include="MetroFlowData.cs" />
+    <Compile Include="MetroFlowItem.cs" />
+    <Compile Include="MovementMonitor.cs" />
+    <Compile Include="MovementMonitorEventArgs.cs" />
+    <Compile Include="Numbers.cs" />
+    <Compile Include="OpacityToggleButton.cs" />
+    <Compile Include="PasswordInputPrompt.cs" />
+    <Compile Include="PopUpEventArgs`2.cs" />
+    <Compile Include="PopUpResult.cs" />
+    <Compile Include="PopUp`2.cs" />
+    <Compile Include="ProgressOverlay.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyChangedEventArgs`1.cs" />
+    <Compile Include="RectangularButton.cs" />
+    <Compile Include="RoundButton.cs" />
+    <Compile Include="RoundToggleButton.cs" />
+    <Compile Include="SelectionTapEventArgs.cs" />
+    <Compile Include="SuperImage.cs" />
+    <Compile Include="SuperImageSource.cs" />
+    <Compile Include="SuperSlider.cs" />
+    <Compile Include="TemplatedVisualTreeExtensions.cs" />
+    <Compile Include="Tile.cs" />
+    <Compile Include="TileNotification.cs" />
+    <Compile Include="ToastPrompt.cs" />
+    <Compile Include="ToggleButtonBase.cs" />
+    <Compile Include="UserPrompt.cs" />
+    <Compile Include="VisualTreeExtensions.cs" />
+    <EmbeddedResource Include="Properties\Coding4Fun.Toolkit.Controls.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>6.2.14</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Coding4Fun.Toolkit\Coding4Fun.Toolkit.csproj">
+      <Project>{3e2d0e0d-1aa8-4286-85b2-7a68cfa65e3a}</Project>
+      <Name>Coding4Fun.Toolkit</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
