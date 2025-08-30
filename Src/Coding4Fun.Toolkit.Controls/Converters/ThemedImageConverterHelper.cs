@@ -20,7 +20,7 @@ namespace Coding4Fun.Toolkit.Controls.Converters
     {
       if (string.IsNullOrEmpty(path))
         return (BitmapImage) null;
-      bool flag = Application.Current.RequestedTheme == 1;
+      bool flag = Application.Current.RequestedTheme == ApplicationTheme.Dark;
       if (negateResult)
         flag = !flag;
       path = string.Format(path, flag ? (object) "dark" : (object) "light");

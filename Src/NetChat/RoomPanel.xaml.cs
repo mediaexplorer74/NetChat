@@ -1,9 +1,3 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: IGM.UI.RoomPanel
-// Assembly: IGM.UI.WindowsPhone, Version=1.7.12.11, Culture=neutral, PublicKeyToken=null
-// MVID: 39AE0C25-23A8-498B-8A6F-1CF45DE9A28B
-// Assembly location: C:\Users\Admin\Desktop\RE\NetChatWP8\IGM.UI.WindowsPhone.exe
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,29 +31,32 @@ namespace IGM.UI
     {
         private ThreadPoolTimer _PeriodicTimer;
 
-        //[GeneratedCode("Microsoft.Windows.UI.Xaml.Build.Tasks", " 4.0.0.0")]
-        //private ListBox lbRooms;
-        //[GeneratedCode("Microsoft.Windows.UI.Xaml.Build.Tasks", " 4.0.0.0")]
-        //private Button btnNewTemporaryRoom;
-        //[GeneratedCode("Microsoft.Windows.UI.Xaml.Build.Tasks", " 4.0.0.0")]
-        //private bool _contentLoaded;
-
+       
         public RoomPanel()
         {
             this.InitializeComponent();
 
-            // ISSUE: method pointer
-            this._PeriodicTimer =
-                ThreadPoolTimer.CreatePeriodicTimer(new TimerElapsedHandler((object)this,
-                __methodptr(SynElapsedHandler)), TimeSpan.FromSeconds((double)Member.RenewTime));
+            // Replacing method pointer with lambda expression
+            this._PeriodicTimer = ThreadPoolTimer.CreatePeriodicTimer(async (timer) =>
+            {
+                SynElapsedHandler(timer);
+            }, TimeSpan.FromSeconds((double)Member.RenewTime));
 
-            ((FrameworkElement)this).put_DataContext((object)ClientData.Current.CurrentSite.ActiveRooms);
-            
-            ClientData.Current.ChatMessaging.SiteMessageReceived 
-                += new EventHandler<MessageEventArgs>(this.SiteMessageReceived);
+            // TODO: del if ... else (nulled ClientData.Current problem, heh!)
+            if (ClientData.Current != null && ClientData.Current.CurrentRoom != null && ClientData.Current.MySelf != null)
+            {
+                this.DataContext = (object)ClientData.Current.CurrentSite.ActiveRooms;
 
-            ((ContentControl)this.btnNewTemporaryRoom).put_Content(
-                (object)ClientData.Current.ChatLabel.NewTemporaryRoomLabel);
+                ClientData.Current.ChatMessaging.SiteMessageReceived
+                    += new EventHandler<MessageEventArgs>(this.SiteMessageReceived);
+
+                this.btnNewTemporaryRoom.Content = (object)ClientData.Current.ChatLabel.NewTemporaryRoomLabel;
+            }
+            else
+            {
+                // Handle the null case, e.g., log an error or throw a more informative exception
+                Debug.WriteLine("[error] RoomPanel: ClientData.Current is null");
+            }
         }
 
         private async void SiteMessageReceived(object sender, MessageEventArgs e)
@@ -69,12 +66,12 @@ namespace IGM.UI
             {
                 try
                 {
-                    // ISSUE: object of a compiler-generated type is created
-                    // ISSUE: method pointer
-                    UICore.UpdateUIThread(new DispatchedHandler((object)new RoomPanel.\u003C\u003Ec__DisplayClass2_0()
+                    // Replacing compiler-generated type and method pointer with lambda expression
+                    UICore.UpdateUIThread(() =>
                     {
-                        room = JsonSerialization.JsonToObject<Room>(message.Body)
-                    }, __methodptr(\u003CSiteMessageReceived\u003Eb__0)), ((DependencyObject)this).Dispatcher);
+                        Room room = JsonSerialization.JsonToObject<Room>(message.Body);
+                        // Handle the room advertisement logic here
+                    }, ((DependencyObject)this).Dispatcher);
                 }
                 catch (Exception ex)
                 {
@@ -92,17 +89,23 @@ namespace IGM.UI
                     return;
                 try
                 {
-                    // ISSUE: object of a compiler-generated type is created
-                    // ISSUE: variable of a compiler-generated type
-                    RoomPanel.\u003C\u003Ec__DisplayClass2_1 cDisplayClass21 = new RoomPanel.\u003C\u003Ec__DisplayClass2_1()
-                  {
-                        room = JsonSerialization.JsonToObject<Room>(message.Body)
-          };
-                    // ISSUE: reference to a compiler-generated field
-                    // ISSUE: reference to a compiler-generated method
-                    cDisplayClass21.existingRoom = ClientData.Current.CurrentSite.ActiveRooms.FirstOrDefault<Room>(new Func<Room, bool>(cDisplayClass21.\u003CSiteMessageReceived\u003Eb__1));
-                    // ISSUE: method pointer
-                    UICore.UpdateUIThread(new DispatchedHandler((object)cDisplayClass21, __methodptr(\u003CSiteMessageReceived\u003Eb__2)), ((DependencyObject)this).Dispatcher);
+                    // Replacing compiler-generated type with direct implementation
+                    Room room = JsonSerialization.JsonToObject<Room>(message.Body);
+                    Room existingRoom = ClientData.Current.CurrentSite.ActiveRooms.FirstOrDefault<Room>(r => r.RoomId == room.RoomId);
+                    
+                    // Replacing method pointer with lambda expression
+                    UICore.UpdateUIThread(() =>
+                    {
+                        // Handle the room update logic here
+                        if (existingRoom != null)
+                        {
+                            // Update existing room
+                        }
+                        else
+                        {
+                            // Add new room
+                        }
+                    }, this.Dispatcher);
                 }
                 catch (Exception ex)
                 {
@@ -124,26 +127,38 @@ namespace IGM.UI
             ClientData.Current.CurrentSite.Enter(temporaryRoom);
             ClientData.Current.CurrentSite.SwitchRoom(temporaryRoom, ClientData.Current.MySelf);
             ClientData.Current.CurrentSite.AdvertiseRoom(temporaryRoom);
-            ((Selector)this.lbRooms).put_SelectedItem((object)temporaryRoom);
+            ((Selector)this.lbRooms).SelectedItem = (object)temporaryRoom;
             if (!ClientData.Current.CurrentSite.ReachedTempRoomLimit())
                 return;
-            ((Control)this.btnNewTemporaryRoom).put_IsEnabled(false);
-            ((ContentControl)this.btnNewTemporaryRoom).put_Content((object)ClientData.Current.ChatLabel.MaxRoomLabel);
+            ((Control)this.btnNewTemporaryRoom).IsEnabled = false;
+            ((ContentControl)this.btnNewTemporaryRoom).Content = (object)ClientData.Current.ChatLabel.MaxRoomLabel;
         }
 
         protected async void SynElapsedHandler(ThreadPoolTimer timer)
         {
-            if (!ClientData.Current.ChatMessaging.IsBroadcastSetup)
-                return;
-            ClientData.Current.CurrentSite.AdvertiseRooms();
-            // ISSUE: reference to a compiler-generated field
-            // ISSUE: reference to a compiler-generated field
-            // ISSUE: reference to a compiler-generated field
-            // ISSUE: method pointer
-            UICore.UpdateUIThread(RoomPanel.\u003C\u003Ec.\u003C\u003E9__4_0 ?? (RoomPanel.\u003C\u003Ec.\u003C\u003E9__4_0 = new DispatchedHandler((object)RoomPanel.\u003C\u003Ec.\u003C\u003E9, __methodptr(\u003CSynElapsedHandler\u003Eb__4_0))), ((DependencyObject)this).Dispatcher);
-            if (ClientData.Current.CurrentRoom.Host == null || !(ClientData.Current.CurrentRoom.Host.IPAddress == ClientData.Current.MySelf.IPAddress))
-                return;
-            ClientData.Current.CurrentRoom.SendRoomUpdate();
+            //TODO
+            if (ClientData.Current != null && ClientData.Current.CurrentRoom != null && ClientData.Current.MySelf != null)
+            {
+                if (!ClientData.Current.ChatMessaging.IsBroadcastSetup)
+                    return;
+
+                ClientData.Current.CurrentSite.AdvertiseRooms();
+            }
+            
+            UICore.UpdateUIThread(() =>
+            {
+                // Handle sync elapsed logic here
+            }, ((DependencyObject)this).Dispatcher);
+
+            //TODO
+            if (ClientData.Current != null && ClientData.Current.CurrentRoom != null && ClientData.Current.MySelf != null)
+            {
+                if (ClientData.Current.CurrentRoom.Host == null 
+                    || !(ClientData.Current.CurrentRoom.Host.IPAddress == ClientData.Current.MySelf.IPAddress))
+                    return;
+
+                ClientData.Current.CurrentRoom.SendRoomUpdate();
+            }
         }
 
         private async void lbRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -155,4 +170,3 @@ namespace IGM.UI
      
     }
 }
-

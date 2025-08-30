@@ -1,4 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
+// Decompiled with JetBrains decompiler
 // Type: Coding4Fun.Toolkit.Controls.AboutPromptItem
 // Assembly: Coding4Fun.Toolkit.Controls, Version=2.1.7.0, Culture=neutral, PublicKeyToken=null
 // MVID: A56425CC-78B4-4409-A058-D6DF5D854B90
@@ -32,15 +32,15 @@ namespace Coding4Fun.Toolkit.Controls
     public static readonly DependencyProperty EmailAddressProperty = DependencyProperty.Register(nameof (EmailAddress), typeof (string), typeof (AboutPromptItem), new PropertyMetadata((object) ""));
     public static readonly DependencyProperty AuthorNameProperty = DependencyProperty.Register(nameof (AuthorName), typeof (string), typeof (AboutPromptItem), new PropertyMetadata((object) ""));
 
-    public AboutPromptItem() => this.put_DefaultStyleKey((object) typeof (AboutPromptItem));
+    public AboutPromptItem() => this.DefaultStyleKey = typeof (AboutPromptItem);
 
-    protected virtual void OnApplyTemplate()
+    protected override void OnApplyTemplate()
     {
-      ((FrameworkElement) this).OnApplyTemplate();
+      base.OnApplyTemplate();
       if (this._website != null)
-        WindowsRuntimeMarshal.RemoveEventHandler<ManipulationCompletedEventHandler>(new Action<EventRegistrationToken>(((UIElement) this._website).remove_ManipulationCompleted), new ManipulationCompletedEventHandler(this.websiteClick_ManipulationCompleted));
+        ((UIElement)this._website).ManipulationCompleted -= this.websiteClick_ManipulationCompleted;
       if (this._emailAddress != null)
-        WindowsRuntimeMarshal.RemoveEventHandler<ManipulationCompletedEventHandler>(new Action<EventRegistrationToken>(((UIElement) this._emailAddress).remove_ManipulationCompleted), new ManipulationCompletedEventHandler(this.email_ManipulationCompleted));
+        ((UIElement)this._emailAddress).ManipulationCompleted -= this.email_ManipulationCompleted;
       this._emailAddress = this.GetTemplateChild("emailAddress") as TextBlock;
       this._website = this.GetTemplateChild("website") as TextBlock;
       this._author = this.GetTemplateChild("author") as TextBlock;
@@ -49,32 +49,32 @@ namespace Coding4Fun.Toolkit.Controls
       AboutPromptItem.SetVisibility(this._author);
       if (this._emailAddress != null)
       {
-        TextBlock emailAddress = this._emailAddress;
-        WindowsRuntimeMarshal.AddEventHandler<ManipulationCompletedEventHandler>(new Func<ManipulationCompletedEventHandler, EventRegistrationToken>(((UIElement) emailAddress).add_ManipulationCompleted), new Action<EventRegistrationToken>(((UIElement) emailAddress).remove_ManipulationCompleted), new ManipulationCompletedEventHandler(this.email_ManipulationCompleted));
+        ((UIElement)this._emailAddress).ManipulationCompleted += this.email_ManipulationCompleted;
       }
-      if (this._website == null)
-        return;
-      TextBlock website = this._website;
-      WindowsRuntimeMarshal.AddEventHandler<ManipulationCompletedEventHandler>(new Func<ManipulationCompletedEventHandler, EventRegistrationToken>(((UIElement) website).add_ManipulationCompleted), new Action<EventRegistrationToken>(((UIElement) website).remove_ManipulationCompleted), new ManipulationCompletedEventHandler(this.websiteClick_ManipulationCompleted));
+      if (this._website != null)
+      {
+        ((UIElement)this._website).ManipulationCompleted += this.websiteClick_ManipulationCompleted;
+      }
     }
 
     private async void email_ManipulationCompleted(
       object sender,
       ManipulationCompletedRoutedEventArgs e)
     {
-      int num = await Launcher.LaunchUriAsync(new Uri(string.Format("mailto:?to={0}&subject={1} Feedback", (object) this.EmailAddress, (object) ManifestHelper.GetDisplayName()))) ? 1 : 0;
+      bool result = await Launcher.LaunchUriAsync(new Uri(string.Format("mailto:?to={0}&subject={1} Feedback", this.EmailAddress, ManifestHelper.GetDisplayName())));
     }
 
     private async void websiteClick_ManipulationCompleted(
       object sender,
       ManipulationCompletedRoutedEventArgs e)
     {
-      int num = await Launcher.LaunchUriAsync(new Uri(this.WebSiteUrl)) ? 1 : 0;
+      bool result = await Launcher.LaunchUriAsync(new Uri(this.WebSiteUrl));
     }
 
     private static void SetVisibility(TextBlock control)
     {
-      ((UIElement) control)?.put_Visibility(string.IsNullOrEmpty(control.Text) ? (Visibility) 1 : (Visibility) 0);
+      if (control != null)
+        ((UIElement)control).Visibility = string.IsNullOrEmpty(control.Text) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     public string WebSiteUrl
@@ -90,7 +90,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     protected internal string WebSiteDisplay
     {
-      get => (string) ((DependencyObject) this).GetValue(AboutPromptItem.WebSiteDisplayProperty);
+      get => (string) this.GetValue(AboutPromptItem.WebSiteDisplayProperty);
       set
       {
         if (value != null)
@@ -103,41 +103,41 @@ namespace Coding4Fun.Toolkit.Controls
           if (!string.IsNullOrEmpty(value) && value.StartsWith("www.twitter.com"))
             value = "@" + value.Remove(0, "www.twitter.com".Length).TrimStart('/');
         }
-        ((DependencyObject) this).SetValue(AboutPromptItem.WebSiteDisplayProperty, (object) value);
+        this.SetValue(AboutPromptItem.WebSiteDisplayProperty, value);
       }
     }
 
     public string Role
     {
-      get => (string) ((DependencyObject) this).GetValue(AboutPromptItem.RoleProperty);
+      get => (string) this.GetValue(AboutPromptItem.RoleProperty);
       set
       {
         if (value != null)
           value = value.ToLowerInvariant();
-        ((DependencyObject) this).SetValue(AboutPromptItem.RoleProperty, (object) value);
+        this.SetValue(AboutPromptItem.RoleProperty, value);
       }
     }
 
     public string EmailAddress
     {
-      get => (string) ((DependencyObject) this).GetValue(AboutPromptItem.EmailAddressProperty);
+      get => (string) this.GetValue(AboutPromptItem.EmailAddressProperty);
       set
       {
         if (value != null)
           value = value.ToLowerInvariant();
-        ((DependencyObject) this).SetValue(AboutPromptItem.EmailAddressProperty, (object) value);
+        this.SetValue(AboutPromptItem.EmailAddressProperty, value);
         AboutPromptItem.SetVisibility(this._emailAddress);
       }
     }
 
     public string AuthorName
     {
-      get => (string) ((DependencyObject) this).GetValue(AboutPromptItem.AuthorNameProperty);
+      get => (string) this.GetValue(AboutPromptItem.AuthorNameProperty);
       set
       {
         if (value != null)
           value = value.ToLowerInvariant();
-        ((DependencyObject) this).SetValue(AboutPromptItem.AuthorNameProperty, (object) value);
+        this.SetValue(AboutPromptItem.AuthorNameProperty, value);
         AboutPromptItem.SetVisibility(this._author);
       }
     }

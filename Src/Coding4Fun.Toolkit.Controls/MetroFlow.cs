@@ -36,7 +36,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     public event EventHandler<SelectionTapEventArgs> SelectionTap;
 
-    public MetroFlow() => ((Control) this).put_DefaultStyleKey((object) typeof (MetroFlow));
+    public MetroFlow() => this.DefaultStyleKey = typeof (MetroFlow);
 
     protected virtual void OnItemsChanged(object e)
     {
@@ -52,10 +52,10 @@ namespace Coding4Fun.Toolkit.Controls
 
     protected virtual bool IsItemItsOwnContainerOverride(object item) => item is MetroFlowData;
 
-    protected virtual void OnApplyTemplate()
+    protected override void OnApplyTemplate()
     {
-      ((FrameworkElement) this).OnApplyTemplate();
-      this._layoutGrid = ((Control) this).GetTemplateChild("LayoutRoot") as Grid;
+      base.OnApplyTemplate();
+      this._layoutGrid = this.GetTemplateChild("LayoutRoot") as Grid;
       if (this._layoutGrid == null || ApplicationSpace.IsDesignMode && ((ICollection<object>) this.Items).Count <= 0)
         return;
       this.ControlLoaded();
@@ -157,7 +157,8 @@ namespace Coding4Fun.Toolkit.Controls
 
     private static void ChangeColumnWidth(ColumnDefinition target, double value)
     {
-      target?.put_Width(new GridLength(value));
+      if (target != null)
+        target.Width = new GridLength(value);
     }
 
     private void ControlLoaded()
@@ -172,7 +173,7 @@ namespace Coding4Fun.Toolkit.Controls
       {
         bool flag = num == this.SelectedColumnIndex;
         ColumnDefinition columnDefinition1 = new ColumnDefinition();
-        columnDefinition1.put_Width(!flag ? this._minimizedGridLength : new GridLength(1.0, GridUnitType.Star));
+        columnDefinition1.Width = !flag ? this._minimizedGridLength : new GridLength(1.0, GridUnitType.Star);
         ColumnDefinition columnDefinition2 = columnDefinition1;
         ((ICollection<ColumnDefinition>) layoutGrid.ColumnDefinitions).Add(columnDefinition2);
         MetroFlowItem metroFlowItem1 = new MetroFlowItem()
@@ -187,9 +188,9 @@ namespace Coding4Fun.Toolkit.Controls
           TitleOpacity = flag ? 1.0 : 0.0,
           TitleVisibility = flag ? (Visibility) 0 : (Visibility) 1
         };
-        ((DependencyObject) metroFlowItem1).SetValue(Grid.ColumnProperty, (object) num);
+        metroFlowItem1.SetValue(Grid.ColumnProperty, num);
         MetroFlowItem metroFlowItem2 = metroFlowItem1;
-        WindowsRuntimeMarshal.AddEventHandler<TappedEventHandler>(new Func<TappedEventHandler, EventRegistrationToken>(((UIElement) metroFlowItem2).add_Tapped), new Action<EventRegistrationToken>(((UIElement) metroFlowItem2).remove_Tapped), new TappedEventHandler(this.ItemTap));
+        metroFlowItem2.Tapped += this.ItemTap;
         ((ICollection<UIElement>) ((Panel) layoutGrid).Children).Add((UIElement) metroFlowItem1);
         ++num;
       }
@@ -200,7 +201,7 @@ namespace Coding4Fun.Toolkit.Controls
       if (!(sender is MetroFlowItem element))
         return;
       int selectedColumnIndex1 = this.SelectedColumnIndex;
-      this.SelectedColumnIndex = MetroFlow.GetColumnIndex((DependencyObject) element);
+      this.SelectedColumnIndex = MetroFlow.GetColumnIndex(element);
       int selectedColumnIndex2 = this.SelectedColumnIndex;
       if (selectedColumnIndex1 != selectedColumnIndex2 || this.SelectionTap == null)
         return;
@@ -242,15 +243,14 @@ namespace Coding4Fun.Toolkit.Controls
         this.CreateDoubleAnimations(sb, (DependencyObject) metroFlowItem2, "TitleOpacity", fromValue: metroFlowItem2.TitleOpacity);
         this.CreateDoubleAnimations(sb, (DependencyObject) metroFlowItem2, "ItemIndexOpacity", 1.0, metroFlowItem2.ItemIndexOpacity);
       }
-      DoubleAnimation doubleAnimations1 = this.CreateDoubleAnimations(sb, (DependencyObject) this, "CollapsingWidth", this._minimizedGridLength.Value);
-      DoubleAnimation doubleAnimations2 = this.CreateDoubleAnimations(sb, (DependencyObject) this, "ExpandingWidth", fromValue: this._minimizedGridLength.Value);
-      Storyboard storyboard = sb;
-      WindowsRuntimeMarshal.AddEventHandler<EventHandler<object>>(new Func<EventHandler<object>, EventRegistrationToken>(((Timeline) storyboard).add_Completed), new Action<EventRegistrationToken>(((Timeline) storyboard).remove_Completed), (EventHandler<object>) ((sbSender, sbEventArgs) => this.AnimationCompleted()));
+      DoubleAnimation doubleAnimations1 = this.CreateDoubleAnimations(sb, this, "CollapsingWidth", this._minimizedGridLength.Value);
+      DoubleAnimation doubleAnimations2 = this.CreateDoubleAnimations(sb, this, "ExpandingWidth", fromValue: this._minimizedGridLength.Value);
+      sb.Completed += (sbSender, sbEventArgs) => this.AnimationCompleted();
       if (metroFlowItem2 != null)
       {
-        double actualWidth = ((FrameworkElement) metroFlowItem2).ActualWidth;
-        doubleAnimations2.put_To(new double?(actualWidth));
-        doubleAnimations1.put_From(new double?(actualWidth));
+        double actualWidth = metroFlowItem2.ActualWidth;
+        doubleAnimations2.To = actualWidth;
+        doubleAnimations1.From = actualWidth;
       }
       ((UIElement) this).UpdateLayout();
       this._animationBoard = sb;
@@ -265,22 +265,22 @@ namespace Coding4Fun.Toolkit.Controls
       double fromValue = 0.0)
     {
       DoubleAnimation doubleAnimation = new DoubleAnimation();
-      doubleAnimation.put_To(new double?(toValue));
-      doubleAnimation.put_From(new double?(fromValue));
-      ((Timeline) doubleAnimation).put_Duration((Duration) this.AnimationDuration);
+      doubleAnimation.To = toValue;
+      doubleAnimation.From = fromValue;
+      doubleAnimation.Duration = this.AnimationDuration;
       DoubleAnimation doubleAnimations = doubleAnimation;
-      Storyboard.SetTarget((Timeline) doubleAnimations, target);
-      Storyboard.SetTargetProperty((Timeline) doubleAnimations, propertyPath);
-      ((ICollection<Timeline>) sb.Children).Add((Timeline) doubleAnimations);
+      Storyboard.SetTarget(doubleAnimations, target);
+      Storyboard.SetTargetProperty(doubleAnimations, propertyPath);
+      sb.Children.Add(doubleAnimations);
       return doubleAnimations;
     }
 
     private static MetroFlowItem GetMetroFlowItem(Panel target, int index)
     {
-      return ((IEnumerable<UIElement>) target.Children).Where<UIElement>((Func<UIElement, bool>) (item => MetroFlow.GetColumnIndex((DependencyObject) item) == index)).SingleOrDefault<UIElement>() as MetroFlowItem;
+      return ((IEnumerable<UIElement>) target.Children).Where<UIElement>((Func<UIElement, bool>) (item => MetroFlow.GetColumnIndex(item) == index)).SingleOrDefault<UIElement>() as MetroFlowItem;
     }
 
-    private static int GetColumnIndex(DependencyObject element)
+    private static int GetColumnIndex(UIElement element)
     {
       return (int) element.GetValue(Grid.ColumnProperty);
     }
@@ -289,11 +289,15 @@ namespace Coding4Fun.Toolkit.Controls
 
     private void AnimationCompleted(int column)
     {
-      for (int index = 0; index < ((ICollection<ColumnDefinition>) this._layoutGrid.ColumnDefinitions).Count; ++index)
-        ((IList<ColumnDefinition>) this._layoutGrid.ColumnDefinitions)[index].put_Width(index != column ? this._minimizedGridLength : this._maximizedGridLength);
-      foreach (MetroFlowItem element in ((IEnumerable<UIElement>) ((Panel) this._layoutGrid).Children).Select<UIElement, MetroFlowItem>((Func<UIElement, MetroFlowItem>) (t => t as MetroFlowItem)))
-        MetroFlow.SetMetroFlowControlItemProperties(element, MetroFlow.GetColumnIndex((DependencyObject) element) == column);
-      ((UIElement) this).UpdateLayout();
+      for (int index = 0; index < this._layoutGrid.ColumnDefinitions.Count; ++index)
+        this._layoutGrid.ColumnDefinitions[index].Width = index != column ? this._minimizedGridLength : this._maximizedGridLength;
+      foreach (UIElement element in ((Panel) this._layoutGrid).Children)
+      {
+        MetroFlowItem item = element as MetroFlowItem;
+        if (item != null)
+          MetroFlow.SetMetroFlowControlItemProperties(item, MetroFlow.GetColumnIndex(element) == column);
+      }
+      this.UpdateLayout();
     }
 
     private static void SetMetroFlowControlItemProperties(MetroFlowItem item, bool isLarge)
@@ -301,14 +305,7 @@ namespace Coding4Fun.Toolkit.Controls
       if (item == null)
         return;
       item.ImageVisibility = item.TitleVisibility = isLarge ? (Visibility) 0 : (Visibility) 1;
-      MetroFlowItem metroFlowItem1 = item;
-      MetroFlowItem metroFlowItem2 = item;
-      int num1 = isLarge ? 1 : 0;
-      double num2;
-      double num3 = num2 = (double) num1;
-      metroFlowItem2.ImageOpacity = num2;
-      double num4 = num3;
-      metroFlowItem1.TitleOpacity = num4;
+      item.ImageOpacity = item.TitleOpacity = isLarge ? 1.0 : 0.0;
       item.ItemIndexVisibility = isLarge ? (Visibility) 1 : (Visibility) 0;
       item.ItemIndexOpacity = isLarge ? 0.0 : 1.0;
     }

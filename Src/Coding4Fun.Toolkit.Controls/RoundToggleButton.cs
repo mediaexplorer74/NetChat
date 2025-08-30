@@ -13,7 +13,7 @@ namespace Coding4Fun.Toolkit.Controls
   {
     public RoundToggleButton()
     {
-      ((Control) this).put_DefaultStyleKey((object) typeof (RoundToggleButton));
+      this.DefaultStyleKey = typeof (RoundToggleButton);
     }
   }
 }

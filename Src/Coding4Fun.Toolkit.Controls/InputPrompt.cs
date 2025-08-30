@@ -1,4 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
+// Decompiled with JetBrains decompiler
 // Type: Coding4Fun.Toolkit.Controls.InputPrompt
 // Assembly: Coding4Fun.Toolkit.Controls, Version=2.1.7.0, Culture=neutral, PublicKeyToken=null
 // MVID: A56425CC-78B4-4409-A058-D6DF5D854B90
@@ -26,7 +26,7 @@ namespace Coding4Fun.Toolkit.Controls
     public static readonly DependencyProperty MessageTextWrappingProperty = DependencyProperty.Register(nameof (MessageTextWrapping), typeof (TextWrapping), typeof (InputPrompt), new PropertyMetadata((object) (TextWrapping) 1));
     public static readonly DependencyProperty InputScopeProperty = DependencyProperty.Register(nameof (InputScope), typeof (InputScope), typeof (InputPrompt), (PropertyMetadata) null);
 
-    public InputPrompt() => this.put_DefaultStyleKey((object) typeof (InputPrompt));
+    public InputPrompt() => this.DefaultStyleKey = typeof (InputPrompt);
 
     protected override async void OnApplyTemplate()
     {
@@ -35,8 +35,8 @@ namespace Coding4Fun.Toolkit.Controls
       if (this.InputBox == null)
         return;
       Windows.UI.Xaml.Data.Binding binding = new Windows.UI.Xaml.Data.Binding();
-      binding.put_Source((object) this.InputBox);
-      binding.put_Path(new PropertyPath("Text"));
+      binding.Source = this.InputBox;
+      binding.Path = new PropertyPath("Text");
       ((FrameworkElement) this).SetBinding(UserPrompt.ValueProperty, (BindingBase) binding);
       TextBinding.SetUpdateSourceOnChange((DependencyObject) this.InputBox, true);
       this.HookUpEventForIsSubmitOnEnterKey();
@@ -48,8 +48,14 @@ namespace Coding4Fun.Toolkit.Controls
     private async Task DelayInputSelect()
     {
       await Task.Delay(250);
-      // ISSUE: method pointer
-      await ApplicationSpace.CurrentDispatcher.RunAsync((CoreDispatcherPriority) 0, new DispatchedHandler((object) this, __methodptr(\u003CDelayInputSelect\u003Eb__4_0)));
+      await ApplicationSpace.CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+      {
+        if (InputBox != null)
+        {
+          InputBox.Focus(FocusState.Programmatic);
+          InputBox.SelectAll();
+        }
+      });
     }
 
     private void HookUpEventForIsSubmitOnEnterKey()
@@ -57,16 +63,18 @@ namespace Coding4Fun.Toolkit.Controls
       this.InputBox = this.GetTemplateChild("inputBox") as TextBox;
       if (this.InputBox == null)
         return;
-      WindowsRuntimeMarshal.RemoveEventHandler<KeyEventHandler>(new Action<EventRegistrationToken>(((UIElement) this.InputBox).remove_KeyDown), new KeyEventHandler(this.InputBoxKeyDown));
+        
+      this.InputBox.KeyDown -= InputBoxKeyDown;
+      
       if (!this.IsSubmitOnEnterKey)
         return;
-      TextBox inputBox = this.InputBox;
-      WindowsRuntimeMarshal.AddEventHandler<KeyEventHandler>(new Func<KeyEventHandler, EventRegistrationToken>(((UIElement) inputBox).add_KeyDown), new Action<EventRegistrationToken>(((UIElement) inputBox).remove_KeyDown), new KeyEventHandler(this.InputBoxKeyDown));
+        
+      this.InputBox.KeyDown += InputBoxKeyDown;
     }
 
     private void InputBoxKeyDown(object sender, KeyRoutedEventArgs e)
     {
-      if (e.Key != 13)
+      if (e.Key != Windows.System.VirtualKey.Enter)
         return;
       this.OnCompleted(new PopUpEventArgs<string, PopUpResult>()
       {

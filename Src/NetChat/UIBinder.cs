@@ -1,13 +1,8 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: IGM.UI.UIBinder
-// Assembly: IGM.UI.WindowsPhone, Version=1.7.12.11, Culture=neutral, PublicKeyToken=null
-// MVID: 39AE0C25-23A8-498B-8A6F-1CF45DE9A28B
-// Assembly location: C:\Users\Admin\Desktop\RE\NetChatWP8\IGM.UI.WindowsPhone.exe
-
 using Coding4Fun.Toolkit.Controls;
 using IGM.Library;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
@@ -114,7 +109,8 @@ namespace IGM.UI
         {
           ++Setting.Current.DailyAssistCount;
           if (Setting.Current.GetLifeTimeUseCountRange(Setting.Current.LifetimeAssistCount) != "0")
-            IGM.UI.Util.LogEvent(string.Format("Lifetime Assist Count {0}", (object) Setting.Current.GetLifeTimeUseCountRange(Setting.Current.LifetimeAssistCount)));
+            IGM.UI.Util.LogEvent(string.Format("Lifetime Assist Count {0}",
+                (object) Setting.Current.GetLifeTimeUseCountRange(Setting.Current.LifetimeAssistCount)));
           Task<SearchResult> a = ClientData.Current.Assistant.Ask(message.Body);
           await Task.Delay(1000);
           SearchResult searchResult = await a;
@@ -132,7 +128,8 @@ namespace IGM.UI
       finally
       {
         if (!string.IsNullOrWhiteSpace(response))
-          this.HandleReceivedMessage(ClientData.Current.CurrentRoom.CreateBotMessage(response, ClientData.Current.LobbyBot, ClientData.Current.Assistant.BotGender), ClientData.Current.LobbyBot, lvChat, color);
+          this.HandleReceivedMessage(ClientData.Current.CurrentRoom.CreateBotMessage(
+              response, ClientData.Current.LobbyBot, ClientData.Current.Assistant.BotGender), ClientData.Current.LobbyBot, lvChat, color);
       }
       response = (string) null;
     }
@@ -144,7 +141,8 @@ namespace IGM.UI
         ((ICollection<object>) ((ItemsControl) lvChat).Items).Remove(obj);
       ((ICollection<object>) ((ItemsControl) lvChat).Items).Add((object) this.CreateRoomBanner(activeMember));
       ((UIElement) lvChat).UpdateLayout();
-      ((ListViewBase) lvChat).ScrollIntoView(((IList<object>) ((ItemsControl) lvChat).Items)[((ICollection<object>) ((ItemsControl) lvChat).Items).Count - 1]);
+      ((ListViewBase) lvChat).ScrollIntoView(
+          ((IList<object>) ((ItemsControl) lvChat).Items)[((ICollection<object>) ((ItemsControl) lvChat).Items).Count - 1]);
     }
 
     public async void HandleReceivedMessage(
@@ -156,7 +154,9 @@ namespace IGM.UI
       this.CreateReceivedLine(lvChat)(message.Header.MessageId, message);
       if (!Setting.Current.IsSpeechEnabled)
         return;
-      VoiceType voiceType = message.Header.SenderGender == string.Empty ? VoiceType.Peer : (message.Header.SenderGender == Gender.Male.GetKey() ? VoiceType.Male : VoiceType.Female);
+      VoiceType voiceType = message.Header.SenderGender == string.Empty 
+                ? VoiceType.Peer 
+                : (message.Header.SenderGender == Gender.Male.GetKey() ? VoiceType.Male : VoiceType.Female);
       this.PlayAudio(this.ForegroundPlayer)(message.Body, voiceType);
     }
 
@@ -175,7 +175,9 @@ namespace IGM.UI
       ListView lvChat,
       Color color)
     {
-      this.CreateConfirmLine(lvChat)(string.IsNullOrEmpty(message.Header.OriginalMessageId) ? message.Header.MessageId : message.Header.OriginalMessageId);
+      this.CreateConfirmLine(lvChat)(string.IsNullOrEmpty(message.Header.OriginalMessageId)
+          ? message.Header.MessageId
+          : message.Header.OriginalMessageId);
     }
 
     public async void HandleFullyConfirmedMessage(
@@ -184,20 +186,23 @@ namespace IGM.UI
       ListView lvChat,
       Color color)
     {
-      this.CreateFullyConfirmLine(lvChat)(string.IsNullOrEmpty(message.Header.OriginalMessageId) ? message.Header.MessageId : message.Header.OriginalMessageId);
+      this.CreateFullyConfirmLine(lvChat)(string.IsNullOrEmpty(message.Header.OriginalMessageId) 
+          ? message.Header.MessageId 
+          : message.Header.OriginalMessageId);
     }
 
     public Action<string> CreateConfirmLine(TextBlock tbMessages)
     {
       return (Action<string>) (id =>
       {
-        Inline inline1 = ((IEnumerable<Inline>) tbMessages.Inlines).FirstOrDefault<Inline>((Func<Inline, bool>) (s => s is ChatRun && ((ChatRun) s).MessageId == id));
+        Inline inline1 = ((IEnumerable<Inline>) tbMessages.Inlines).FirstOrDefault<Inline>((Func<Inline, bool>) 
+            (s => s is ChatRun && ((ChatRun) s).MessageId == id));
         if (inline1 == null)
           return;
         Inline inline2 = ((IEnumerable<Inline>) ((Span) inline1).Inlines).FirstOrDefault<Inline>();
         if (!(inline2 is Run))
           return;
-        ((TextElement) inline2).put_Foreground((Brush) UISetting.Current.ConfirmBrush);
+        ((TextElement) inline2).Foreground = (Brush) UISetting.Current.ConfirmBrush;
       });
     }
 
@@ -205,11 +210,12 @@ namespace IGM.UI
     {
       return (Action<string>) (id =>
       {
-        if (!(((IEnumerable<object>) ((ItemsControl) lvChat).Items).Where<object>((Func<object, bool>) (s => s is ChatBubble && ((FrameworkElement) s).Name == id)).FirstOrDefault<object>() is ChatBubble chatBubble2))
+        if (!(((IEnumerable<object>) ((ItemsControl) lvChat).Items).Where<object>((Func<object, bool>)
+            (s => s is ChatBubble && ((FrameworkElement) s).Name == id)).FirstOrDefault<object>() is ChatBubble chatBubble2))
           return;
-        ((Control) chatBubble2).put_BorderBrush((Brush) UISetting.Current.PartiallyConfirmedBrush);
-        ((Control) chatBubble2).put_Background((Brush) UISetting.Current.PartiallyConfirmedBrush);
-        ((UIElement) chatBubble2).put_Opacity(1.0);
+        ((Control) chatBubble2).BorderBrush = (Brush) UISetting.Current.PartiallyConfirmedBrush;
+        ((Control) chatBubble2).Background = (Brush) UISetting.Current.PartiallyConfirmedBrush;
+        ((UIElement) chatBubble2).Opacity = 1.0;
       });
     }
 
@@ -217,11 +223,14 @@ namespace IGM.UI
     {
       return (Action<string>) (id =>
       {
-        if (!(((IEnumerable<object>) ((ItemsControl) lvChat).Items).Where<object>((Func<object, bool>) (s => s is ChatBubble && ((FrameworkElement) s).Name == id)).FirstOrDefault<object>() is ChatBubble chatBubble2))
+        if (!(((IEnumerable<object>) ((ItemsControl) lvChat).Items)
+          .Where<object>((Func<object, bool>) (s => s is ChatBubble
+          && ((FrameworkElement) s).Name == id)).FirstOrDefault<object>() is ChatBubble chatBubble2))
           return;
-        ((Control) chatBubble2).put_Background((Brush) UISetting.Current.ConfirmBrush);
-        ((UIElement) chatBubble2).put_Opacity(1.0);
-        ((Control) chatBubble2).put_BorderBrush((Brush) UISetting.Current.ConfirmBrush);
+
+        ((Control) chatBubble2).Background = (Brush) UISetting.Current.ConfirmBrush;
+        ((UIElement) chatBubble2).Opacity = 1.0;
+        ((Control) chatBubble2).BorderBrush = (Brush) UISetting.Current.ConfirmBrush;
       });
     }
 
@@ -230,8 +239,10 @@ namespace IGM.UI
       return (Action<string, ChatMessage>) ((id, content) =>
       {
         Run run1 = new Run();
-        run1.put_Text(string.Format("{0} ({1}): {2}", (object) content.Header.Sender, (object) content.Header.DateTime.ToString("HH:mm:ss"), (object) content.Body) + Environment.NewLine);
-        ((TextElement) run1).put_Foreground((Brush) new SolidColorBrush(Colors.Cyan));
+        run1.Text = string.Format("{0} ({1}): {2}", 
+            (object) content.Header.Sender, (object) content.Header.DateTime.ToString("HH:mm:ss"),
+            (object) content.Body) + Environment.NewLine;
+        ((TextElement) run1).Foreground = (Brush) new SolidColorBrush(Colors.Cyan);
         Run run2 = run1;
         ChatRun chatRun = new ChatRun();
         ((ICollection<Inline>) chatRun.Inlines).Add((Inline) run2);
@@ -244,9 +255,13 @@ namespace IGM.UI
     {
       return (Action<string, ChatMessage>) ((id, m) =>
       {
-        ((ICollection<object>) ((ItemsControl) lvChat).Items).Add((object) this.CreateChatBubble((object) this.CreateBubbleContent(m), id, ChatBubbleDirection.UpperLeft, (HorizontalAlignment) 0, (Brush) UISetting.Current.ChatBubbleReceivedBackground, (Brush) UISetting.Current.ChatBubbleReceivedForeground, (Brush) UISetting.Current.ChatBubbleReceivedBorderBrush));
+        ((ICollection<object>) ((ItemsControl) lvChat).Items).Add(
+            (object) this.CreateChatBubble((object) this.CreateBubbleContent(m), id, 
+            ChatBubbleDirection.UpperLeft, (HorizontalAlignment) 0, (Brush) UISetting.Current.ChatBubbleReceivedBackground,
+            (Brush) UISetting.Current.ChatBubbleReceivedForeground, (Brush) UISetting.Current.ChatBubbleReceivedBorderBrush));
         ((UIElement) lvChat).UpdateLayout();
-        ((ListViewBase) lvChat).ScrollIntoView(((IList<object>) ((ItemsControl) lvChat).Items)[((ICollection<object>) ((ItemsControl) lvChat).Items).Count - 1]);
+        ((ListViewBase) lvChat).ScrollIntoView(((IList<object>) (
+            (ItemsControl) lvChat).Items)[((ICollection<object>) ((ItemsControl) lvChat).Items).Count - 1]);
       });
     }
 
@@ -255,8 +270,8 @@ namespace IGM.UI
       return (Action<string, string>) ((id, m) =>
       {
         Run run1 = new Run();
-        run1.put_Text(m + Environment.NewLine);
-        ((TextElement) run1).put_Foreground((Brush) new SolidColorBrush(Colors.DarkRed));
+        run1.Text = m + Environment.NewLine;
+        ((TextElement) run1).Foreground = (Brush) new SolidColorBrush(Colors.DarkRed);
         Run run2 = run1;
         ChatRun chatRun = new ChatRun();
         ((ICollection<Inline>) chatRun.Inlines).Add((Inline) run2);
@@ -269,11 +284,17 @@ namespace IGM.UI
     {
       return (Action<string, string>) ((id, m) =>
       {
-        if (((IEnumerable<object>) ((ItemsControl) lvChat).Items).Where<object>((Func<object, bool>) (s => s is ChatBubble && ((FrameworkElement) s).Name == id)).FirstOrDefault<object>() is ChatBubble)
+        if (((IEnumerable<object>) ((ItemsControl) lvChat).Items).Where<object>(
+            (Func<object, bool>) (s => s is ChatBubble && ((FrameworkElement) s).Name == id)).FirstOrDefault<object>() is ChatBubble)
           return;
-        ((ICollection<object>) ((ItemsControl) lvChat).Items).Add((object) this.CreateChatBubble((object) this.CreateErrorBubbleContent(m, "System"), id, ChatBubbleDirection.UpperLeft, (HorizontalAlignment) 0, (Brush) UISetting.Current.ChatBubbleSystemBackground, (Brush) UISetting.Current.ChatBubbleSystemForeground, (Brush) UISetting.Current.ChatBubbleBorderBrush));
+
+        ((ICollection<object>) ((ItemsControl) lvChat).Items).Add(
+            (object) this.CreateChatBubble((object) this.CreateErrorBubbleContent(m, "System"),
+            id, ChatBubbleDirection.UpperLeft, (HorizontalAlignment) 0, (Brush) UISetting.Current.ChatBubbleSystemBackground,
+            (Brush) UISetting.Current.ChatBubbleSystemForeground, (Brush) UISetting.Current.ChatBubbleBorderBrush));
         ((UIElement) lvChat).UpdateLayout();
-        ((ListViewBase) lvChat).ScrollIntoView(((IList<object>) ((ItemsControl) lvChat).Items)[((ICollection<object>) ((ItemsControl) lvChat).Items).Count - 1]);
+        ((ListViewBase) lvChat).ScrollIntoView(((IList<object>) (
+            (ItemsControl) lvChat).Items)[((ICollection<object>) ((ItemsControl) lvChat).Items).Count - 1]);
       });
     }
 
@@ -281,11 +302,17 @@ namespace IGM.UI
     {
       return (Action<string, string>) ((id, m) =>
       {
-        if (((IEnumerable<object>) ((ItemsControl) lvChat).Items).Where<object>((Func<object, bool>) (s => s is ChatBubble && ((FrameworkElement) s).Name == id)).FirstOrDefault<object>() is ChatBubble)
+        if (((IEnumerable<object>) ((ItemsControl) lvChat).Items).Where<object>(
+            (Func<object, bool>) (s => s is ChatBubble && ((FrameworkElement) s).Name == id)).FirstOrDefault<object>() is ChatBubble)
           return;
-        ((ICollection<object>) ((ItemsControl) lvChat).Items).Add((object) this.CreateChatBubble((object) this.CreateErrorBubbleContent(m, "Error"), id, ChatBubbleDirection.UpperLeft, (HorizontalAlignment) 0, (Brush) UISetting.Current.ChatBubbleErrorBackground, (Brush) UISetting.Current.ChatBubbleErrorForeground, (Brush) UISetting.Current.ChatBubbleBorderBrush));
+        ((ICollection<object>) ((ItemsControl) lvChat).Items).Add((object) this.CreateChatBubble(
+            (object) this.CreateErrorBubbleContent(m, "Error"), id, ChatBubbleDirection.UpperLeft, (HorizontalAlignment) 0, 
+            (Brush) UISetting.Current.ChatBubbleErrorBackground, (Brush) UISetting.Current.ChatBubbleErrorForeground,
+            (Brush) UISetting.Current.ChatBubbleBorderBrush));
+
         ((UIElement) lvChat).UpdateLayout();
-        ((ListViewBase) lvChat).ScrollIntoView(((IList<object>) ((ItemsControl) lvChat).Items)[((ICollection<object>) ((ItemsControl) lvChat).Items).Count - 1]);
+        ((ListViewBase) lvChat).ScrollIntoView(((IList<object>) (
+            (ItemsControl) lvChat).Items)[((ICollection<object>) ((ItemsControl) lvChat).Items).Count - 1]);
       });
     }
 
@@ -299,16 +326,16 @@ namespace IGM.UI
       Brush border)
     {
       ChatBubble chatBubble = new ChatBubble();
-      chatBubble.put_Content(content);
-      ((FrameworkElement) chatBubble).put_Name(id);
-      ((UIElement) chatBubble).put_UseLayoutRounding(true);
-      ((Control) chatBubble).put_Padding(UISetting.Current.ChatBubblePadding);
-      ((Control) chatBubble).put_BorderThickness(UISetting.Current.ChatBubbleBorderThickness);
-      ((Control) chatBubble).put_BorderBrush(border);
-      ((Control) chatBubble).put_Background(background);
-      ((Control) chatBubble).put_Foreground(foreground);
+      chatBubble.Content = content;
+      ((FrameworkElement) chatBubble).Name = id;
+      ((UIElement) chatBubble).UseLayoutRounding = true;
+      ((Control) chatBubble).Padding = UISetting.Current.ChatBubblePadding;
+      ((Control) chatBubble).BorderThickness = UISetting.Current.ChatBubbleBorderThickness;
+      ((Control) chatBubble).BorderBrush = border;
+      ((Control) chatBubble).Background = background;
+      ((Control) chatBubble).Foreground = foreground;
       chatBubble.ChatBubbleDirection = direction;
-      ((FrameworkElement) chatBubble).put_HorizontalAlignment(halignment);
+      ((FrameworkElement) chatBubble).HorizontalAlignment = halignment;
       return chatBubble;
     }
 
@@ -317,8 +344,10 @@ namespace IGM.UI
       return (Action<string, ChatMessage>) ((id, content) =>
       {
         Run run1 = new Run();
-        run1.put_Text(string.Format("{0} ({1}): {2}", (object) content.Header.Sender, (object) content.Header.DateTime.ToString("HH:mm:ss"), (object) content.Body) + Environment.NewLine);
-        ((TextElement) run1).put_Foreground((Brush) new SolidColorBrush(Colors.LightBlue));
+        run1.Text = string.Format("{0} ({1}): {2}", (object) content.Header.Sender,
+            (object) content.Header.DateTime.ToString("HH:mm:ss"), (object) content.Body) + Environment.NewLine;
+
+        ((TextElement) run1).Foreground = (Brush) new SolidColorBrush(Colors.LightBlue);
         Run run2 = run1;
         ChatRun chatRun = new ChatRun();
         ((ICollection<Inline>) chatRun.Inlines).Add((Inline) run2);
@@ -331,40 +360,45 @@ namespace IGM.UI
     {
       return (Action<string, ChatMessage>) ((id, m) =>
       {
-        ((ICollection<object>) ((ItemsControl) lvChat).Items).Add((object) this.CreateChatBubble((object) this.CreateBubbleContent(m), id, ChatBubbleDirection.LowerRight, (HorizontalAlignment) 2, (Brush) UISetting.Current.ChatBubbleSendingBackground, (Brush) UISetting.Current.ChatBubbleSendingForeground, (Brush) UISetting.Current.PartiallyConfirmedBrush));
+        ((ICollection<object>) ((ItemsControl) lvChat).Items).Add(
+            (object) this.CreateChatBubble((object) this.CreateBubbleContent(m), id, ChatBubbleDirection.LowerRight,
+            (HorizontalAlignment) 2, (Brush) UISetting.Current.ChatBubbleSendingBackground, 
+            (Brush) UISetting.Current.ChatBubbleSendingForeground, (Brush) UISetting.Current.PartiallyConfirmedBrush));
+
         ((UIElement) lvChat).UpdateLayout();
-        ((ListViewBase) lvChat).ScrollIntoView(((IList<object>) ((ItemsControl) lvChat).Items)[((ICollection<object>) ((ItemsControl) lvChat).Items).Count - 1]);
+        ((ListViewBase) lvChat).ScrollIntoView(((IList<object>) (
+            (ItemsControl) lvChat).Items)[((ICollection<object>) ((ItemsControl) lvChat).Items).Count - 1]);
       });
     }
 
     private StackPanel CreateErrorBubbleContent(string m, string header)
     {
       StackPanel errorBubbleContent = new StackPanel();
-      ((FrameworkElement) errorBubbleContent).put_VerticalAlignment((VerticalAlignment) 3);
-      ((FrameworkElement) errorBubbleContent).put_MinWidth(UISetting.Current.ChatBubbleMinWidth);
+      ((FrameworkElement) errorBubbleContent).VerticalAlignment = (VerticalAlignment) 3;
+      ((FrameworkElement) errorBubbleContent).MinWidth = UISetting.Current.ChatBubbleMinWidth;
       TextBlock textBlock1 = new TextBlock();
-      textBlock1.put_FontSize(UISetting.Current.ChatBubbleFontSize);
-      textBlock1.put_Padding(UISetting.Current.ChatBubblePadding);
-      textBlock1.put_Text(m);
-      textBlock1.put_FontSize(UISetting.Current.ChatBubbleFontSize);
-      ((FrameworkElement) textBlock1).put_Margin(UISetting.Current.ChatBubbleContentMargin);
-      textBlock1.put_TextWrapping(UISetting.Current.ChatBubbleTextWrapping);
-      ((FrameworkElement) textBlock1).put_MinWidth(UISetting.Current.ChatBubbleMinWidth);
+      textBlock1.FontSize = UISetting.Current.ChatBubbleFontSize;
+      textBlock1.Padding = UISetting.Current.ChatBubblePadding;
+      textBlock1.Text = m;
+      textBlock1.FontSize = UISetting.Current.ChatBubbleFontSize;
+      ((FrameworkElement) textBlock1).Margin = UISetting.Current.ChatBubbleContentMargin;
+      textBlock1.TextWrapping = UISetting.Current.ChatBubbleTextWrapping;
+      ((FrameworkElement) textBlock1).MinWidth = UISetting.Current.ChatBubbleMinWidth;
       StackPanel stackPanel = new StackPanel();
-      ((FrameworkElement) stackPanel).put_HorizontalAlignment((HorizontalAlignment) 2);
-      stackPanel.put_Orientation((Orientation) 1);
+      ((FrameworkElement) stackPanel).HorizontalAlignment = (HorizontalAlignment) 2;
+      stackPanel.Orientation = (Orientation) 1;
       TextBlock textBlock2 = new TextBlock();
-      textBlock2.put_Text(header);
-      textBlock2.put_FontSize(UISetting.Current.ChatBubbleSenderFontSize);
-      textBlock2.put_Padding(UISetting.Current.ChatBubbleSenderPadding);
-      ((FrameworkElement) textBlock2).put_VerticalAlignment((VerticalAlignment) 0);
+      textBlock2.Text = header;
+      textBlock2.FontSize = UISetting.Current.ChatBubbleSenderFontSize;
+      textBlock2.Padding = UISetting.Current.ChatBubbleSenderPadding;
+      ((FrameworkElement) textBlock2).VerticalAlignment = (VerticalAlignment) 0;
       TextBlock textBlock3 = new TextBlock();
-      textBlock3.put_FontSize(UISetting.Current.ChatBubbleTimestampFontSize);
-      ((FrameworkElement) textBlock3).put_HorizontalAlignment((HorizontalAlignment) 2);
-      ((FrameworkElement) textBlock3).put_VerticalAlignment((VerticalAlignment) 2);
-      textBlock3.put_Foreground((Brush) UISetting.Current.ChatBubbleTimestampForeground);
-      textBlock3.put_Text(DateTime.Now.ToString("HH:mm:ss"));
-      textBlock3.put_Padding(UISetting.Current.ChatBubbleTimestampPadding);
+      textBlock3.FontSize = UISetting.Current.ChatBubbleTimestampFontSize;
+      ((FrameworkElement) textBlock3).HorizontalAlignment = (HorizontalAlignment) 2;
+      ((FrameworkElement) textBlock3).VerticalAlignment = (VerticalAlignment) 2;
+      textBlock3.Foreground = (Brush) UISetting.Current.ChatBubbleTimestampForeground;
+      textBlock3.Text = DateTime.Now.ToString("HH:mm:ss");
+      textBlock3.Padding = UISetting.Current.ChatBubbleTimestampPadding;
       ((ICollection<UIElement>) ((Panel) stackPanel).Children).Add((UIElement) textBlock2);
       ((ICollection<UIElement>) ((Panel) stackPanel).Children).Add((UIElement) textBlock3);
       ((ICollection<UIElement>) ((Panel) errorBubbleContent).Children).Add((UIElement) textBlock1);
@@ -375,18 +409,18 @@ namespace IGM.UI
     private Grid CreateRoomBanner(Room r)
     {
       Grid roomBanner = new Grid();
-      ((UIElement) roomBanner).put_Opacity(0.3);
-      ((Panel) roomBanner).put_Background((Brush) new SolidColorBrush(Colors.Gray));
-      ((FrameworkElement) roomBanner).put_Tag((object) UISetting.Current.BannerTag);
+      ((UIElement) roomBanner).Opacity = 0.3;
+      ((Panel) roomBanner).Background = (Brush) new SolidColorBrush(Colors.Gray);
+      ((FrameworkElement) roomBanner).Tag = (object) UISetting.Current.BannerTag;
       TextBlock textBlock = new TextBlock();
-      textBlock.put_FontSize(UISetting.Current.RoomBannerFontSize);
-      textBlock.put_Padding(UISetting.Current.ChatBubblePadding);
-      textBlock.put_Text(string.Format("{0}", (object) r.RoomName));
-      textBlock.put_FontSize(UISetting.Current.RoomBannerFontSize);
-      ((FrameworkElement) textBlock).put_Margin(UISetting.Current.RoomBannerContentMargin);
-      textBlock.put_TextWrapping(UISetting.Current.ChatBubbleTextWrapping);
-      ((FrameworkElement) textBlock).put_HorizontalAlignment((HorizontalAlignment) 1);
-      ((FrameworkElement) textBlock).put_VerticalAlignment((VerticalAlignment) 1);
+      textBlock.FontSize = UISetting.Current.RoomBannerFontSize;
+      textBlock.Padding = UISetting.Current.ChatBubblePadding;
+      textBlock.Text = string.Format("{0}", (object) r.RoomName);
+      textBlock.FontSize = UISetting.Current.RoomBannerFontSize;
+      ((FrameworkElement) textBlock).Margin = UISetting.Current.RoomBannerContentMargin;
+      textBlock.TextWrapping = UISetting.Current.ChatBubbleTextWrapping;
+      ((FrameworkElement) textBlock).HorizontalAlignment = (HorizontalAlignment) 1;
+      ((FrameworkElement) textBlock).VerticalAlignment = (VerticalAlignment) 1;
       ((ICollection<UIElement>) ((Panel) roomBanner).Children).Add((UIElement) textBlock);
       return roomBanner;
     }
@@ -394,48 +428,51 @@ namespace IGM.UI
     private StackPanel CreateBubbleContent(ChatMessage m)
     {
       StackPanel bubbleContent = new StackPanel();
-      ((FrameworkElement) bubbleContent).put_VerticalAlignment((VerticalAlignment) 3);
-      bubbleContent.put_Orientation((Orientation) 0);
+      ((FrameworkElement) bubbleContent).VerticalAlignment = (VerticalAlignment) 3;
+      bubbleContent.Orientation = (Orientation) 0;
       TextBlock textBlock1 = new TextBlock();
-      textBlock1.put_FontSize(UISetting.Current.ChatBubbleFontSize);
-      textBlock1.put_Padding(UISetting.Current.ChatBubbleContentPadding);
-      textBlock1.put_Text(m.Body);
-      ((FrameworkElement) textBlock1).put_Margin(UISetting.Current.ChatBubbleContentMargin);
-      textBlock1.put_TextWrapping(UISetting.Current.ChatBubbleTextWrapping);
+      textBlock1.FontSize = UISetting.Current.ChatBubbleFontSize;
+      textBlock1.Padding = UISetting.Current.ChatBubbleContentPadding;
+      textBlock1.Text = m.Body;
+      ((FrameworkElement) textBlock1).Margin = UISetting.Current.ChatBubbleContentMargin;
+      textBlock1.TextWrapping = UISetting.Current.ChatBubbleTextWrapping;
       StackPanel stackPanel = new StackPanel();
-      ((FrameworkElement) stackPanel).put_HorizontalAlignment((HorizontalAlignment) 2);
-      stackPanel.put_Orientation((Orientation) 1);
-      ((FrameworkElement) stackPanel).put_Margin(UISetting.Current.ChatBubbleBorderThickness);
+      ((FrameworkElement) stackPanel).HorizontalAlignment = (HorizontalAlignment) 2;
+      stackPanel.Orientation = (Orientation) 1;
+      ((FrameworkElement) stackPanel).Margin = UISetting.Current.ChatBubbleBorderThickness;
       TextBlock textBlock2 = new TextBlock();
-      textBlock2.put_Text(m.Header.Sender);
-      textBlock2.put_FontSize(UISetting.Current.ChatBubbleSenderFontSize);
-      textBlock2.put_Padding(UISetting.Current.ChatBubbleSenderPadding);
-      textBlock2.put_Foreground((Brush) UISetting.Current.ChatBubbleSenderForeground);
-      ((FrameworkElement) textBlock2).put_VerticalAlignment((VerticalAlignment) 2);
-      ((FrameworkElement) textBlock2).put_Margin(new Thickness(0.0, 0.0, 3.0, 0.0));
+      textBlock2.Text = m.Header.Sender;
+      textBlock2.FontSize = UISetting.Current.ChatBubbleSenderFontSize;
+      textBlock2.Padding = UISetting.Current.ChatBubbleSenderPadding;
+      textBlock2.Foreground = (Brush) UISetting.Current.ChatBubbleSenderForeground;
+      ((FrameworkElement) textBlock2).VerticalAlignment = (VerticalAlignment) 2;
+      ((FrameworkElement) textBlock2).Margin = new Thickness(0.0, 0.0, 3.0, 0.0);
       TextBlock textBlock3 = new TextBlock();
-      textBlock3.put_FontSize(UISetting.Current.ChatBubbleTimestampFontSize);
-      ((FrameworkElement) textBlock3).put_HorizontalAlignment((HorizontalAlignment) 2);
-      ((FrameworkElement) textBlock3).put_VerticalAlignment((VerticalAlignment) 2);
-      textBlock3.put_Foreground((Brush) UISetting.Current.ChatBubbleTimestampForeground);
-      textBlock3.put_Text(m.Header.DateTime.ToString("HH:mm:ss"));
-      textBlock3.put_Padding(UISetting.Current.ChatBubbleTimestampPadding);
-      ((FrameworkElement) textBlock3).put_Margin(new Thickness(0.0, 0.0, 3.0, 0.0));
+      textBlock3.FontSize = UISetting.Current.ChatBubbleTimestampFontSize;
+      ((FrameworkElement) textBlock3).HorizontalAlignment = (HorizontalAlignment) 2;
+      ((FrameworkElement) textBlock3).VerticalAlignment = (VerticalAlignment) 2;
+      textBlock3.Foreground = (Brush) UISetting.Current.ChatBubbleTimestampForeground;
+      textBlock3.Text = m.Header.DateTime.ToString("HH:mm:ss");
+      textBlock3.Padding = UISetting.Current.ChatBubbleTimestampPadding;
+      ((FrameworkElement) textBlock3).Margin = new Thickness(0.0, 0.0, 3.0, 0.0);
       HyperlinkButton hyperlinkButton1 = new HyperlinkButton();
-      ((FrameworkElement) hyperlinkButton1).put_Margin(UISetting.Current.ChatBubbleTimestampPadding);
-      ((Control) hyperlinkButton1).put_Padding(UISetting.Current.ChatBubbleTimestampPadding);
-      ((FrameworkElement) hyperlinkButton1).put_HorizontalAlignment((HorizontalAlignment) 2);
-      ((FrameworkElement) hyperlinkButton1).put_VerticalAlignment((VerticalAlignment) 2);
+      ((FrameworkElement) hyperlinkButton1).Margin = UISetting.Current.ChatBubbleTimestampPadding;
+      ((Control) hyperlinkButton1).Padding = UISetting.Current.ChatBubbleTimestampPadding;
+      ((FrameworkElement) hyperlinkButton1).HorizontalAlignment = (HorizontalAlignment) 2;
+      ((FrameworkElement) hyperlinkButton1).VerticalAlignment = (VerticalAlignment) 2;
       HyperlinkButton hyperlinkButton2 = hyperlinkButton1;
-      WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(((ButtonBase) hyperlinkButton2).add_Click), new Action<EventRegistrationToken>(((ButtonBase) hyperlinkButton2).remove_Click), (RoutedEventHandler) ((s, o) => this.PlayMessage(m.Body, this.ForegroundPlayer, VoiceType.Self)));
-      ((ContentControl) hyperlinkButton1).put_Content((object) ">>");
-      ((Control) hyperlinkButton1).put_FontSize(UISetting.Current.ChatBubbleTimestampFontSize);
+
+      ((Windows.UI.Xaml.Controls.Primitives.ButtonBase) hyperlinkButton2).Click += 
+                (RoutedEventHandler) ((s, o) => this.PlayMessage(m.Body, this.ForegroundPlayer, VoiceType.Self));
+
+      ((ContentControl) hyperlinkButton1).Content = (object) ">>";
+      ((Control) hyperlinkButton1).FontSize = UISetting.Current.ChatBubbleTimestampFontSize;
       ((ICollection<UIElement>) ((Panel) stackPanel).Children).Add((UIElement) textBlock2);
       ((ICollection<UIElement>) ((Panel) stackPanel).Children).Add((UIElement) textBlock3);
       ((ICollection<UIElement>) ((Panel) stackPanel).Children).Add((UIElement) hyperlinkButton1);
       ((ICollection<UIElement>) ((Panel) bubbleContent).Children).Add((UIElement) textBlock1);
       ((ICollection<UIElement>) ((Panel) bubbleContent).Children).Add((UIElement) stackPanel);
-      ((FrameworkElement) bubbleContent).put_VerticalAlignment((VerticalAlignment) 3);
+      ((FrameworkElement) bubbleContent).VerticalAlignment = (VerticalAlignment) 3;
       return bubbleContent;
     }
 
@@ -443,13 +480,16 @@ namespace IGM.UI
     {
       return (Action<string>) (id =>
       {
-        Inline inline1 = ((IEnumerable<Inline>) tbMessages.Inlines).FirstOrDefault<Inline>((Func<Inline, bool>) (s => s is ChatRun && ((ChatRun) s).MessageId == id));
+        Inline inline1 = ((IEnumerable<Inline>) tbMessages.Inlines).FirstOrDefault<Inline>(
+            (Func<Inline, bool>) (s => s is ChatRun && ((ChatRun) s).MessageId == id));
+
         if (inline1 == null)
           return;
+
         Inline inline2 = ((IEnumerable<Inline>) ((Span) inline1).Inlines).FirstOrDefault<Inline>();
         if (!(inline2 is Run))
           return;
-        ((TextElement) inline2).put_Foreground((Brush) new SolidColorBrush(Colors.Gray));
+        ((TextElement) inline2).Foreground = (Brush) new SolidColorBrush(Colors.Gray);
       });
     }
 
@@ -457,11 +497,14 @@ namespace IGM.UI
     {
       return (Action<string>) (id =>
       {
-        if (!(((IEnumerable<object>) ((ItemsControl) lvChat).Items).Where<object>((Func<object, bool>) (s => s is ChatBubble && ((FrameworkElement) s).Name == id)).FirstOrDefault<object>() is ChatBubble chatBubble2))
+        if (!(((IEnumerable<object>) ((ItemsControl) lvChat).Items).Where<object>(
+            (Func<object, bool>) (s => s is ChatBubble && ((FrameworkElement) s).Name == id))
+          .FirstOrDefault<object>() is ChatBubble chatBubble2))
           return;
-        ((UIElement) chatBubble2).put_Opacity(UISetting.Current.ChatBubbleLostOpacity);
-        ((Control) chatBubble2).put_Background((Brush) UISetting.Current.ConfirmBrush);
-        ((Control) chatBubble2).put_BorderBrush((Brush) UISetting.Current.ConfirmBrush);
+
+        ((UIElement) chatBubble2).Opacity = UISetting.Current.ChatBubbleLostOpacity;
+        ((Control) chatBubble2).Background = (Brush) UISetting.Current.ConfirmBrush;
+        ((Control) chatBubble2).BorderBrush = (Brush) UISetting.Current.ConfirmBrush;
       });
     }
 
@@ -483,6 +526,7 @@ namespace IGM.UI
       }
       catch (Exception ex)
       {
+         Debug.WriteLine("[ex] UIBinder error: " + ex.Message);
       }
     }
 
@@ -498,17 +542,22 @@ namespace IGM.UI
       }
       catch (Exception ex)
       {
+            Debug.WriteLine("[ex] UIBinder error: " + ex.Message);
       }
     }
 
     public ChatMessage CreateBotGreetingMessage(Peer lobbyBot)
     {
-      return ClientData.Current.CurrentRoom.RoomId == SuperChannel.Lobby.GetKey() ? ClientData.Current.CurrentRoom.CreateBotMessage(ReceptionistBot.GreetConvo, lobbyBot, ClientData.Current.Assistant.BotGender) : ClientData.Current.CurrentRoom.CreateBotMessage(ReceptionistBot.EntersConvo, lobbyBot, ClientData.Current.Assistant.BotGender);
+      return ClientData.Current.CurrentRoom.RoomId == SuperChannel.Lobby.GetKey() 
+                ? ClientData.Current.CurrentRoom.CreateBotMessage(ReceptionistBot.GreetConvo, lobbyBot, ClientData.Current.Assistant.BotGender)
+                : ClientData.Current.CurrentRoom.CreateBotMessage(ReceptionistBot.EntersConvo, lobbyBot, ClientData.Current.Assistant.BotGender);
     }
 
     public ChatMessage CreateBotExitMessage(Peer lobbyBot)
     {
-      return ClientData.Current.CurrentRoom.RoomId == SuperChannel.Lobby.GetKey() ? ClientData.Current.CurrentRoom.CreateBotMessage(ReceptionistBot.GoodByeConvo, lobbyBot, ClientData.Current.Assistant.BotGender) : ClientData.Current.CurrentRoom.CreateBotMessage(ReceptionistBot.LeavesConvo, lobbyBot, ClientData.Current.Assistant.BotGender);
+      return ClientData.Current.CurrentRoom.RoomId == SuperChannel.Lobby.GetKey()
+                ? ClientData.Current.CurrentRoom.CreateBotMessage(ReceptionistBot.GoodByeConvo, lobbyBot, ClientData.Current.Assistant.BotGender)
+                : ClientData.Current.CurrentRoom.CreateBotMessage(ReceptionistBot.LeavesConvo, lobbyBot, ClientData.Current.Assistant.BotGender);
     }
 
     public async void LeaveBot(Peer bot, ListView lvChat)
@@ -522,7 +571,12 @@ namespace IGM.UI
     {
       Setting.Current.IsAssistantEnabled = true;
       ClientData.Current.CurrentSite.LobbyBotEnter(bot);
-      UIBinder.Current.HandleReceivedMessage(!Setting.Current.MaxAssistReached() ? UIBinder.Current.CreateBotGreetingMessage(bot) : ClientData.Current.CurrentRoom.CreateBotMessage(ReceptionistBot.OffDutyMessage(Setting.Current.GetBreakSecondsRemaining()), bot, ClientData.Current.Assistant.BotGender), bot, lvChat, Colors.Gray);
+
+      UIBinder.Current.HandleReceivedMessage(!Setting.Current.MaxAssistReached()
+          ? UIBinder.Current.CreateBotGreetingMessage(bot) 
+          : ClientData.Current.CurrentRoom.CreateBotMessage(ReceptionistBot.OffDutyMessage(Setting.Current.GetBreakSecondsRemaining()),
+          bot, ClientData.Current.Assistant.BotGender), bot, lvChat, Colors.Gray);
+
       if (!Setting.Current.MaxAssistReached())
         return;
       this.LeaveBot(bot, lvChat);

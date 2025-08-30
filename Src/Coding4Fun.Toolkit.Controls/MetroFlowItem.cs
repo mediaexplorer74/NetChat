@@ -27,7 +27,7 @@ namespace Coding4Fun.Toolkit.Controls
     public static readonly DependencyProperty TitleVisibilityProperty = DependencyProperty.Register(nameof (TitleVisibility), typeof (Visibility), typeof (MetroFlowItem), new PropertyMetadata((object) (Visibility) 0));
     public static readonly DependencyProperty TitleOpacityProperty = DependencyProperty.Register(nameof (TitleOpacity), typeof (double), typeof (MetroFlowItem), new PropertyMetadata((object) 1.0));
 
-    public MetroFlowItem() => this.put_DefaultStyleKey((object) typeof (MetroFlowItem));
+    public MetroFlowItem() => this.DefaultStyleKey = typeof (MetroFlowItem);
 
     public ImageSource ImageSource
     {

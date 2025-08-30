@@ -1,106 +1,379 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: IGM.UI.AttendeePanel
-// Assembly: IGM.UI.WindowsPhone, Version=1.7.12.11, Culture=neutral, PublicKeyToken=null
-// MVID: 39AE0C25-23A8-498B-8A6F-1CF45DE9A28B
-// Assembly location: C:\Users\Admin\Desktop\RE\NetChatWP8\IGM.UI.WindowsPhone.exe
-
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
+using System.Linq;
+using System.Collections.ObjectModel;
 using weekysoft.store.ChatRoom;
+using weekysoft.store.Chatting;
 using weekysoft.store.Messaging;
 using weekysoft.store.Storage;
+using Windows.Media.SpeechSynthesis;
 using Windows.System.Threading;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Markup;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Coding4Fun.Toolkit.Controls;
 
 namespace IGM.UI
 {
-    public sealed partial class AttendeePanel : UserControl//, IComponentConnector
+    public sealed partial class ChatBubblePanel : UserControl, INotifyPropertyChanged
     {
-        public static readonly DependencyProperty PeerCountProperty = DependencyProperty.Register(nameof(PeerCount), typeof(int), typeof(AttendeePanel), (PropertyMetadata)null);
-        private ThreadPoolTimer _PeriodicTimer;
-        //[GeneratedCode("Microsoft.Windows.UI.Xaml.Build.Tasks", " 4.0.0.0")]
-        //private ListBox lbPeers;
-        //[GeneratedCode("Microsoft.Windows.UI.Xaml.Build.Tasks", " 4.0.0.0")]
-        //private bool _contentLoaded;
+        private ThreadPoolTimer _periodicTimer;
+        private SpeechSynthesizer _speechSynthesizer;
+        private bool _isSpeechEnabled;
+        private bool _isAssistantEnabled;
+        
+        public ObservableCollection<ChatMessageViewModel> ChatMessages { get; } = new ObservableCollection<ChatMessageViewModel>();
 
-        public int PeerCount => ((ICollection<object>)((ItemsControl)this.lbPeers).Items).Count;
-
-        public AttendeePanel()
+        public bool IsSpeechEnabled
         {
-            this.InitializeComponent();
-            // ISSUE: method pointer
-            this._PeriodicTimer = ThreadPoolTimer.CreatePeriodicTimer(new TimerElapsedHandler((object)this, __methodptr(PeerSynElapsedHandler)), TimeSpan.FromSeconds((double)Member.RenewTime));
-            ClientData.Current.CurrentRoom.Enter(ClientData.Current.MySelf);
-            this.UpdateRoomSettings();
-            ClientData.Current.CurrentSite.RoomSwitched += new EventHandler<RoomEventArgs>(this.RoomSwitched);
-        }
-
-        private async void UpdateRoomSettings()
-        {
-            ((FrameworkElement)this).put_DataContext((object)ClientData.Current.CurrentRoom.ActivePeers);
-            ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageAck -= new EventHandler<MessageEventArgs>(this.Room_ReceivedMessageAck);
-            ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageAck += new EventHandler<MessageEventArgs>(this.Room_ReceivedMessageAck);
-            ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageNak -= new EventHandler<MessageEventArgs>(this.Room_ReceivedMessageNak);
-            ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageNak += new EventHandler<MessageEventArgs>(this.Room_ReceivedMessageNak);
-            ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageSync -= new EventHandler<MessageEventArgs>(this.Room_ReceivedMessageSync);
-            ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageSync += new EventHandler<MessageEventArgs>(this.Room_ReceivedMessageSync);
-        }
-
-        private async void RoomSwitched(object sender, RoomEventArgs e) => this.UpdateRoomSettings();
-
-        private async void Room_ReceivedMessageSync(object sender, MessageEventArgs e)
-        {
-            // ISSUE: object of a compiler-generated type is created
-            // ISSUE: method pointer
-            UICore.UpdateUIThread(new DispatchedHandler((object)new AttendeePanel.\u003C\u003Ec__DisplayClass7_0()
+            get => _isSpeechEnabled;
+            set
             {
-                e = e
-            }, __methodptr(\u003CRoom_ReceivedMessageSync\u003Eb__0)), ((DependencyObject)this).Dispatcher);
+                _isSpeechEnabled = value;
+                OnPropertyChanged();
+            }
         }
 
-        private async void Room_ReceivedMessageNak(object sender, MessageEventArgs e)
+        public bool IsAssistantEnabled
         {
-            // ISSUE: object of a compiler-generated type is created
-            // ISSUE: method pointer
-            UICore.UpdateUIThread(new DispatchedHandler((object)new AttendeePanel.\u003C\u003Ec__DisplayClass8_0()
+            get => _isAssistantEnabled;
+            set
             {
-                e = e
-            }, __methodptr(\u003CRoom_ReceivedMessageNak\u003Eb__0)), ((DependencyObject)this).Dispatcher);
+                _isAssistantEnabled = value;
+                OnPropertyChanged();
+            }
         }
 
-        private async void Room_ReceivedMessageAck(object sender, MessageEventArgs e)
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public ChatBubblePanel()
         {
-            // ISSUE: object of a compiler-generated type is created
-            // ISSUE: method pointer
-            UICore.UpdateUIThread(new DispatchedHandler((object)new AttendeePanel.\u003C\u003Ec__DisplayClass9_0()
+            InitializeComponent();
+            DataContext = this;
+            lvChat.ItemsSource = ChatMessages;
+            InitializeChat();
+        }
+
+        private void InitializeChat()
+        {
+            try
             {
-                e = e
-            }, __methodptr(\u003CRoom_ReceivedMessageAck\u003Eb__0)), ((DependencyObject)this).Dispatcher);
+                _speechSynthesizer = new SpeechSynthesizer();
+                
+                // Set up periodic timer for chat synchronization
+                _periodicTimer = ThreadPoolTimer.CreatePeriodicTimer(
+                    PeerSyncElapsedHandler, 
+                    TimeSpan.FromSeconds(Member.RenewTime));
+
+                // Subscribe to messaging events
+                if (ClientData.Current?.CurrentRoom?.ChatMessaging != null)
+                {
+                    ClientData.Current.CurrentRoom.ChatMessaging.MessageReceived += OnReceivedMessage; 
+                    ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageAck += OnReceivedMessageAck;
+                    ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageNak += OnReceivedMessageNak;
+                    ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageSync += OnReceivedMessageSync;
+                }
+
+                // Set up event handlers
+                send.Click += OnSendClick;
+                tbSend.KeyDown += OnTextBoxKeyDown;
+            }
+            catch (Exception ex)
+            {
+                // Handle initialization errors gracefully
+                System.Diagnostics.Debug.WriteLine($"ChatBubblePanel initialization error: {ex.Message}");
+            }
         }
 
-        protected async void PeerSynElapsedHandler(ThreadPoolTimer timer)
+        private async void OnSendClick(object sender, RoutedEventArgs e)
         {
-            if (!ClientData.Current.ChatMessaging.IsBroadcastSetup)
+            await SendMessage();
+        }
+
+        private async void OnTextBoxKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                await SendMessage();
+            }
+        }
+
+        private async System.Threading.Tasks.Task SendMessage()
+        {
+            if (string.IsNullOrWhiteSpace(tbSend.Text))
                 return;
-            ClientData.Current.ChatMessaging.Ack(ClientData.Current.CurrentRoom.RoomId);
-            // ISSUE: reference to a compiler-generated field
-            // ISSUE: reference to a compiler-generated field
-            // ISSUE: reference to a compiler-generated field
-            // ISSUE: method pointer
-            UICore.UpdateUIThread(AttendeePanel.\u003C\u003Ec.\u003C\u003E9__10_0 ?? (AttendeePanel.\u003C\u003Ec.\u003C\u003E9__10_0 = new DispatchedHandler((object)AttendeePanel.\u003C\u003Ec.\u003C\u003E9, __methodptr(\u003CPeerSynElapsedHandler\u003Eb__10_0))), ((DependencyObject)this).Dispatcher);
+
+            try
+            {
+                string messageText = tbSend.Text.Trim();
+                tbSend.Text = string.Empty;
+
+                // Create and send the message
+                var message = new ChatMessage(
+                    ClientData.Current.ChatMessaging.ProtocolVersion, // Fixed: Use ChatMessaging.ProtocolVersion instead of ClientData.Current.ProtocolVersion
+                    ClientData.Current.CurrentRoom.RoomId,
+                    MessageType.Text, // Fixed: Use MessageType.Text instead of MessageType.Chat
+                    ClientData.Current.MySelf.IPAddress,
+                    ClientData.Current.MySelf.DisplayName,
+                    DateTime.Now,
+                    messageText
+                );
+
+                message.IsMyMessage = true;
+                message.IsSending = true;
+
+                // Add to UI
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    AddChatBubble(message);
+                });
+
+                // Send the message
+                ClientData.Current.CurrentRoom.ChatMessaging.SendMessage(message); // Fixed: Use SendMessage instead of Send
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Send message error: {ex.Message}");
+            }
         }
 
-        protected async void Attendee_PeerListUpdated(object sender, PeerEventArgs e)
+        private void AddChatBubble(ChatMessage message)
         {
-            // ISSUE: method pointer
-            UICore.UpdateUIThread(new DispatchedHandler((object)this, __methodptr(\u003CAttendee_PeerListUpdated\u003Eb__11_0)), ((DependencyObject)this).Dispatcher);
+            try
+            {
+                var chatMessageViewModel = new ChatMessageViewModel
+                {
+                    MessageText = message.Body,
+                    SenderName = message.Header.Sender,
+                    Timestamp = message.Header.DateTime, // Fixed: Use DateTime instead of Timestamp
+                    IsFromMe = message.IsMyMessage,
+                    ShowSenderName = !message.IsMyMessage // Show sender name for received messages
+                };
+
+                ChatMessages.Add(chatMessageViewModel);
+
+                // Scroll to the bottom
+                if (ChatMessages.Count > 0)
+                {
+                    lvChat.ScrollIntoView(ChatMessages.Last());
+                }
+
+                // Handle text-to-speech
+                if (IsSpeechEnabled && !message.IsMyMessage)
+                {
+                    _ = SpeakMessageAsync(message.Body);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Add chat bubble error: {ex.Message}");
+            }
         }
-              
+
+        private FrameworkElement CreateChatBubbleContent(ChatMessage message)
+        {
+            var textBlock = new TextBlock
+            {
+                Text = $"{message.Header.Sender}: {message.Body}",
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(5)
+            };
+
+            return textBlock;
+        }
+
+        private Brush GetBackgroundBrush(ChatMessage message)
+        {
+            if (message.IsMyMessage)
+                return UISetting.Current.ChatBubbleMyBackground;
+            return UISetting.Current.ChatBubblePeerBackground;
+        }
+
+        private Brush GetForegroundBrush(ChatMessage message)
+        {
+            if (message.IsMyMessage)
+                return UISetting.Current.ChatBubbleMyForeground;
+            return UISetting.Current.ChatBubblePeerForeground;
+        }
+
+        private async System.Threading.Tasks.Task SpeakMessageAsync(string text)
+        {
+            try
+            {
+                if (_speechSynthesizer != null && !string.IsNullOrEmpty(text))
+                {
+                    var stream = await _speechSynthesizer.SynthesizeTextToStreamAsync(text);
+                    meChatVoice.SetSource(stream, stream.ContentType);
+                    meChatVoice.Play();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Speech synthesis error: {ex.Message}");
+            }
+        }
+
+        private async void OnReceivedMessage(object sender, MessageEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                try
+                {
+                    // Fixed: Create ChatMessage from e.Message.Body instead of e.Message.Content
+                    var message = new ChatMessage(e.Message.Header.ProtocolVersion, 
+                                                 e.Message.Header.RoomId,
+                                                 e.Message.Header.MessageType,
+                                                 e.Message.Header.SenderIP,
+                                                 e.Message.Header.Sender,
+                                                 e.Message.Header.DateTime,
+                                                 e.Message.Body); // Use Body instead of Content
+                    message.IsMyMessage = false;
+                    AddChatBubble(message);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Received message error: {ex.Message}");
+                }
+            });
+        }
+
+        private async void OnReceivedMessageAck(object sender, MessageEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                // Handle message acknowledgment
+                UIBinder.Current.CreateConfirmLine(lvChat)?.Invoke(e.Message.Header.OriginalMessageId);
+            });
+        }
+
+        private async void OnReceivedMessageNak(object sender, MessageEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                // Handle message negative acknowledgment
+                UIBinder.Current.CreateLostLine(lvChat)?.Invoke(e.Message.Header.OriginalMessageId);
+            });
+        }
+
+        private async void OnReceivedMessageSync(object sender, MessageEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                // Handle message synchronization
+
+            });
+        }
+
+        private void PeerSyncElapsedHandler(ThreadPoolTimer timer)
+        {
+            try
+            {
+                if (ClientData.Current?.ChatMessaging?.IsBroadcastSetup == true)
+                {
+                    ClientData.Current.ChatMessaging.Ack(ClientData.Current.CurrentRoom.RoomId);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Peer sync error: {ex.Message}");
+            }
+        }
+
+        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        // Cleanup when control is unloaded
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _periodicTimer?.Cancel();
+                _speechSynthesizer?.Dispose();
+
+                if (ClientData.Current?.CurrentRoom?.ChatMessaging != null)
+                {
+                    ClientData.Current.CurrentRoom.ChatMessaging.MessageReceived -= OnReceivedMessage; // Fixed: Use MessageReceived instead of ReceivedMessage
+                    ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageAck -= OnReceivedMessageAck;
+                    ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageNak -= OnReceivedMessageNak;
+                    ClientData.Current.CurrentRoom.ChatMessaging.ReceivedMessageSync -= OnReceivedMessageSync;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Cleanup error: {ex.Message}");
+            }
+        }
+    }
+
+    // ViewModel for Chat Messages
+    public class ChatMessageViewModel : INotifyPropertyChanged
+    {
+        private string _messageText;
+        private string _senderName;
+        private DateTime _timestamp;
+        private bool _isFromMe;
+        private bool _showSenderName;
+
+        public string MessageText
+        {
+            get => _messageText;
+            set
+            {
+                _messageText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SenderName
+        {
+            get => _senderName;
+            set
+            {
+                _senderName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public DateTime Timestamp
+        {
+            get => _timestamp;
+            set
+            {
+                _timestamp = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsFromMe
+        {
+            get => _isFromMe;
+            set
+            {
+                _isFromMe = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowSenderName
+        {
+            get => _showSenderName;
+            set
+            {
+                _showSenderName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

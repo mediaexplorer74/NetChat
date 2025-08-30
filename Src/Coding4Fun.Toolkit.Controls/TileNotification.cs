@@ -13,7 +13,7 @@ namespace Coding4Fun.Toolkit.Controls
   {
     public TileNotification()
     {
-      ((Control) this).put_DefaultStyleKey((object) typeof (TileNotification));
+      this.DefaultStyleKey = typeof (TileNotification);
     }
   }
 }

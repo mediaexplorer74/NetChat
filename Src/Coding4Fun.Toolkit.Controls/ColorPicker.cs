@@ -35,11 +35,11 @@ namespace Coding4Fun.Toolkit.Controls
 
     public ColorPicker()
     {
-      this.put_DefaultStyleKey((object) typeof (ColorPicker));
-      PreventScrollBinding.SetIsEnabled((DependencyObject) this, true);
-      WindowsRuntimeMarshal.AddEventHandler<SizeChangedEventHandler>(new Func<SizeChangedEventHandler, EventRegistrationToken>(((FrameworkElement) this).add_SizeChanged), new Action<EventRegistrationToken>(((FrameworkElement) this).remove_SizeChanged), new SizeChangedEventHandler(this.ColorPicker_SizeChanged));
-      WindowsRuntimeMarshal.AddEventHandler<DependencyPropertyChangedEventHandler>(new Func<DependencyPropertyChangedEventHandler, EventRegistrationToken>(((Control) this).add_IsEnabledChanged), new Action<EventRegistrationToken>(((Control) this).remove_IsEnabledChanged), new DependencyPropertyChangedEventHandler(this.ColorSlider_IsEnabledChanged));
-      WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(((FrameworkElement) this).add_Loaded), new Action<EventRegistrationToken>(((FrameworkElement) this).remove_Loaded), new RoutedEventHandler(this.ColorPicker_Loaded));
+      this.DefaultStyleKey = typeof (ColorPicker);
+      PreventScrollBinding.SetIsEnabled(this, true);
+      this.SizeChanged += this.ColorPicker_SizeChanged;
+      this.IsEnabledChanged += this.ColorSlider_IsEnabledChanged;
+      this.Loaded += this.ColorPicker_Loaded;
     }
 
     private void ColorPicker_Loaded(object sender, RoutedEventArgs e)
@@ -47,29 +47,29 @@ namespace Coding4Fun.Toolkit.Controls
       this.IsEnabledVisualStateUpdate();
     }
 
-    protected virtual void OnApplyTemplate()
+    protected override void OnApplyTemplate()
     {
-      ((FrameworkElement) this).OnApplyTemplate();
+      base.OnApplyTemplate();
       this.SampleSelector = this.GetTemplateChild("SampleSelector") as Grid;
       this.SelectedHueColor = this.GetTemplateChild("SelectedHueColor") as Rectangle;
       if (this.GetTemplateChild("Body") is Grid templateChild)
       {
         this._monitor = new MovementMonitor();
         this._monitor.Movement += new EventHandler<MovementMonitorEventArgs>(this._monitor_Movement);
-        this._monitor.MonitorControl((Panel) templateChild);
+        this._monitor.MonitorControl(templateChild);
       }
       this.ColorSlider = this.GetTemplateChild("ColorSlider") as ColorSlider;
       if (this.ColorSlider == null)
         return;
       if (this.Thumb == null)
-        this.Thumb = (object) new ColorSliderThumb();
+        this.Thumb = new ColorSliderThumb();
       this.ColorSlider.ColorChanged += new ColorBaseControl.ColorChangedHandler(this.ColorSlider_ColorChanged);
       if (this.SelectedHueColor == null)
         return;
       Windows.UI.Xaml.Data.Binding binding = new Windows.UI.Xaml.Data.Binding();
-      binding.put_Source((object) this.ColorSlider);
-      binding.put_Path(new PropertyPath("SolidColorBrush"));
-      ((FrameworkElement) this.SelectedHueColor).SetBinding(Shape.FillProperty, (BindingBase) binding);
+      binding.Source = this.ColorSlider;
+      binding.Path = new PropertyPath("SolidColorBrush");
+      this.SelectedHueColor.SetBinding(Shape.FillProperty, binding);
     }
 
     private void ColorSlider_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -98,8 +98,8 @@ namespace Coding4Fun.Toolkit.Controls
     {
       this._fromMovement = true;
       this.SetSampleLocation();
-      float saturation = (float) (this._position.X / ((FrameworkElement) this.SelectedHueColor).ActualWidth);
-      float num = (float) (1.0 - this._position.Y / ((FrameworkElement) this.SelectedHueColor).ActualHeight);
+      float saturation = (float) (this._position.X / this.SelectedHueColor.ActualWidth);
+      float num = (float) (1.0 - this._position.Y / this.SelectedHueColor.ActualHeight);
       if (!this._adjustingColor)
         this.ColorChanging(ColorSpace.ConvertHsvToRgb(this.ColorSlider.Color.GetHue(), saturation, num));
       this._fromMovement = false;
@@ -107,16 +107,34 @@ namespace Coding4Fun.Toolkit.Controls
 
     private void SetSampleLocation()
     {
-      double actualHeight1 = ((FrameworkElement) this.SampleSelector).ActualHeight;
-      double actualHeight2 = ((FrameworkElement) this.SelectedHueColor).ActualHeight;
-      double actualWidth = ((FrameworkElement) this.SelectedHueColor).ActualWidth;
-      this._position.X = Coding4Fun.Toolkit.Controls.Common.DoubleExtensions.CheckBound(this._position.X, actualWidth);
-      this._position.Y = Coding4Fun.Toolkit.Controls.Common.DoubleExtensions.CheckBound(this._position.Y, actualHeight2);
+      double actualHeight1 = this.SampleSelector.ActualHeight;
+      double actualHeight2 = this.SelectedHueColor.ActualHeight;
+      double actualWidth = this.SelectedHueColor.ActualWidth;
+      this._position.X = CheckBound(this._position.X, actualWidth);
+      this._position.Y = CheckBound(this._position.Y, actualHeight2);
       double num1 = this._position.X - actualHeight1;
       double num2 = this._position.Y - actualHeight1;
-      ((FrameworkElement) this.SampleSelector).put_Margin(new Thickness(Coding4Fun.Toolkit.Controls.Common.DoubleExtensions.CheckBound(num1, actualWidth), Coding4Fun.Toolkit.Controls.Common.DoubleExtensions.CheckBound(num2, actualHeight2), 0.0, 0.0));
+      this.SampleSelector.Margin = new Thickness(CheckBound(num1, actualWidth), CheckBound(num2, actualHeight2), 0.0, 0.0);
     }
-
+    
+    private double CheckBound(double value, double max)
+    {
+        if (value < 0)
+            return 0;
+        if (value > max)
+            return max;
+        return value;
+    }
+    
+    private double CheckBound(double value, double min, double max)
+    {
+        if (value < min)
+            return min;
+        if (value > max)
+            return max;
+        return value;
+    }
+    
     protected internal override void UpdateLayoutBasedOnColor()
     {
       if (this._fromMovement || this.SelectedHueColor == null)
@@ -129,20 +147,20 @@ namespace Coding4Fun.Toolkit.Controls
         this.ColorSlider.Color = ColorSpace.GetColorFromHueValue((float) (int) hsv.Hue);
         this._adjustingColor = false;
       }
-      this._position.X = (double) hsv.Saturation * ((FrameworkElement) this.SelectedHueColor).ActualWidth;
-      this._position.Y = (1.0 - (double) hsv.Value) * ((FrameworkElement) this.SelectedHueColor).ActualHeight;
+      this._position.X = (double) hsv.Saturation * this.SelectedHueColor.ActualWidth;
+      this._position.Y = (1.0 - (double) hsv.Value) * this.SelectedHueColor.ActualHeight;
       this.SetSampleLocation();
     }
 
     private void IsEnabledVisualStateUpdate()
     {
-      VisualStateManager.GoToState((Control) this, this.IsEnabled ? "Normal" : "Disabled", true);
+      VisualStateManager.GoToState(this, this.IsEnabled ? "Normal" : "Disabled", true);
     }
 
     public object Thumb
     {
-      get => ((DependencyObject) this).GetValue(ColorPicker.ThumbProperty);
-      set => ((DependencyObject) this).SetValue(ColorPicker.ThumbProperty, value);
+      get => this.GetValue(ColorPicker.ThumbProperty);
+      set => this.SetValue(ColorPicker.ThumbProperty, value);
     }
   }
 }

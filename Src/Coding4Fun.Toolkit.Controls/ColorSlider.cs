@@ -1,4 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
+﻿﻿// Decompiled with JetBrains decompiler
 // Type: Coding4Fun.Toolkit.Controls.ColorSlider
 // Assembly: Coding4Fun.Toolkit.Controls, Version=2.1.7.0, Culture=neutral, PublicKeyToken=null
 // MVID: A56425CC-78B4-4409-A058-D6DF5D854B90
@@ -33,19 +33,19 @@ namespace Coding4Fun.Toolkit.Controls
 
     public ColorSlider()
     {
-      this.put_DefaultStyleKey((object) typeof (ColorSlider));
-      WindowsRuntimeMarshal.AddEventHandler<DependencyPropertyChangedEventHandler>(new Func<DependencyPropertyChangedEventHandler, EventRegistrationToken>(((Control) this).add_IsEnabledChanged), new Action<EventRegistrationToken>(((Control) this).remove_IsEnabledChanged), new DependencyPropertyChangedEventHandler(this.SuperSlider_IsEnabledChanged));
+      this.DefaultStyleKey = typeof (ColorSlider);
+      this.IsEnabledChanged += this.SuperSlider_IsEnabledChanged;
     }
 
-    protected virtual void OnApplyTemplate()
+    protected override void OnApplyTemplate()
     {
-      ((FrameworkElement) this).OnApplyTemplate();
+      base.OnApplyTemplate();
       this.Body = this.GetTemplateChild("Body") as Grid;
       this.Slider = this.GetTemplateChild("Slider") as SuperSlider;
       if (this.Thumb == null)
         this.Thumb = (object) new ColorSliderThumb();
       this.SelectedColor = this.GetTemplateChild("SelectedColor") as Rectangle;
-      WindowsRuntimeMarshal.AddEventHandler<SizeChangedEventHandler>(new Func<SizeChangedEventHandler, EventRegistrationToken>(((FrameworkElement) this).add_SizeChanged), new Action<EventRegistrationToken>(((FrameworkElement) this).remove_SizeChanged), new SizeChangedEventHandler(this.UserControl_SizeChanged));
+      this.SizeChanged += this.UserControl_SizeChanged;
       if (this.Slider != null)
       {
         this.Slider.ValueChanged += new EventHandler<PropertyChangedEventArgs<double>>(this.Slider_ValueChanged);
@@ -97,20 +97,20 @@ label_9:
 
     public object Thumb
     {
-      get => ((DependencyObject) this).GetValue(ColorSlider.ThumbProperty);
-      set => ((DependencyObject) this).SetValue(ColorSlider.ThumbProperty, value);
+      get => this.GetValue(ColorSlider.ThumbProperty);
+      set => this.SetValue(ColorSlider.ThumbProperty, value);
     }
 
     public bool IsColorVisible
     {
-      get => (bool) ((DependencyObject) this).GetValue(ColorSlider.IsColorVisibleProperty);
-      set => ((DependencyObject) this).SetValue(ColorSlider.IsColorVisibleProperty, (object) value);
+      get => (bool) this.GetValue(ColorSlider.IsColorVisibleProperty);
+      set => this.SetValue(ColorSlider.IsColorVisibleProperty, value);
     }
 
     public Orientation Orientation
     {
-      get => (Orientation) ((DependencyObject) this).GetValue(ColorSlider.OrientationProperty);
-      set => ((DependencyObject) this).SetValue(ColorSlider.OrientationProperty, (object) value);
+      get => (Orientation) this.GetValue(ColorSlider.OrientationProperty);
+      set => this.SetValue(ColorSlider.OrientationProperty, value);
     }
 
     private static void OnIsColorVisibleChanged(
@@ -152,30 +152,30 @@ label_9:
       FrameworkElement thumb = (FrameworkElement) this.Slider.Thumb;
       if (thumb != null)
       {
-        thumb.put_Height(flag ? 24.0 : double.NaN);
-        thumb.put_Width(flag ? double.NaN : 24.0);
+        thumb.Height = flag ? 24.0 : double.NaN;
+        thumb.Width = flag ? double.NaN : 24.0;
       }
       ((DependencyObject) this.SelectedColor).SetValue(Grid.RowProperty, (object) (flag ? 1 : 0));
       ((DependencyObject) this.SelectedColor).SetValue(Grid.ColumnProperty, (object) (flag ? 0 : 1));
-      double actualWidth = ((FrameworkElement) this.Slider).ActualWidth;
-      double actualHeight = ((FrameworkElement) this.Slider).ActualHeight;
+      double actualWidth = this.Slider.ActualWidth;
+      double actualHeight = this.Slider.ActualHeight;
       double num1 = flag ? actualWidth : actualHeight;
       Rectangle selectedColor = this.SelectedColor;
       double num2;
-      ((FrameworkElement) this.SelectedColor).put_Width(num2 = num1);
+      ((FrameworkElement) this.SelectedColor).Width = num2 = num1;
       double num3 = num2;
-      ((FrameworkElement) selectedColor).put_Height(num3);
+      ((FrameworkElement) selectedColor).Height = num3;
       if (flag)
       {
-        ((IList<RowDefinition>) this.Body.RowDefinitions)[0].put_Height(new GridLength(1.0, GridUnitType.Star));
-        ((IList<RowDefinition>) this.Body.RowDefinitions)[1].put_Height(new GridLength(1.0, GridUnitType.Auto));
+        ((IList<RowDefinition>) this.Body.RowDefinitions)[0].Height = new GridLength(1.0, GridUnitType.Star);
+        ((IList<RowDefinition>) this.Body.RowDefinitions)[1].Height = new GridLength(1.0, GridUnitType.Auto);
       }
       else
       {
-        ((IList<ColumnDefinition>) this.Body.ColumnDefinitions)[0].put_Width(new GridLength(1.0, GridUnitType.Star));
-        ((IList<ColumnDefinition>) this.Body.ColumnDefinitions)[1].put_Width(new GridLength(1.0, GridUnitType.Auto));
+        ((IList<ColumnDefinition>) this.Body.ColumnDefinitions)[0].Width = new GridLength(1.0, GridUnitType.Star);
+        ((IList<ColumnDefinition>) this.Body.ColumnDefinitions)[1].Width = new GridLength(1.0, GridUnitType.Auto);
       }
-      ((UIElement) this.SelectedColor).put_Visibility(this.IsColorVisible ? (Visibility) 0 : (Visibility) 1);
+      this.SelectedColor.Visibility = this.IsColorVisible ? Visibility.Visible : Visibility.Collapsed;
     }
 
     protected internal override void UpdateLayoutBasedOnColor()
@@ -190,8 +190,8 @@ label_9:
 
     private void IsEnabledVisualStateUpdate()
     {
-      VisualStateManager.GoToState((Control) this, this.IsEnabled ? "Normal" : "Disabled", true);
-      this.Slider.put_Background(this.IsEnabled ? (Brush) ColorSpace.GetColorGradientBrush(this.Orientation) : (Brush) ColorSpace.GetBlackAndWhiteGradientBrush(this.Orientation));
+      VisualStateManager.GoToState(this, this.IsEnabled ? "Normal" : "Disabled", true);
+      this.Slider.Background = this.IsEnabled ? (Brush) ColorSpace.GetColorGradientBrush(this.Orientation) : (Brush) ColorSpace.GetBlackAndWhiteGradientBrush(this.Orientation);
     }
   }
 }

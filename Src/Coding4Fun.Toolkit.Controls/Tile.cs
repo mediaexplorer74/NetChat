@@ -14,12 +14,12 @@ namespace Coding4Fun.Toolkit.Controls
   {
     public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Register(nameof (TextWrapping), typeof (TextWrapping), typeof (Tile), new PropertyMetadata((object) (TextWrapping) 1));
 
-    public Tile() => ((Control) this).put_DefaultStyleKey((object) typeof (Tile));
+    public Tile() => this.DefaultStyleKey = typeof (Tile);
 
     public TextWrapping TextWrapping
     {
-      get => (TextWrapping) ((DependencyObject) this).GetValue(Tile.TextWrappingProperty);
-      set => ((DependencyObject) this).SetValue(Tile.TextWrappingProperty, (object) value);
+      get => (TextWrapping) this.GetValue(Tile.TextWrappingProperty);
+      set => this.SetValue(Tile.TextWrappingProperty, value);
     }
   }
 }

@@ -36,17 +36,17 @@ namespace Coding4Fun.Toolkit.Controls
     public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register(nameof (Minimum), typeof (double), typeof (SuperSlider), new PropertyMetadata((object) 0.0));
     public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(nameof (Maximum), typeof (double), typeof (SuperSlider), new PropertyMetadata((object) 10.0));
     public static readonly DependencyProperty StepProperty = DependencyProperty.Register(nameof (StepFrequency), typeof (double), typeof (SuperSlider), new PropertyMetadata((object) 0.0));
-    public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(nameof (Orientation), typeof (Orientation), typeof (SuperSlider), new PropertyMetadata((object) (Orientation) 1, new PropertyChangedCallback(SuperSlider.OnLayoutChanged)));
+    public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(nameof (Orientation), typeof (Orientation), typeof (SuperSlider), new PropertyMetadata((object) Orientation.Vertical, new PropertyChangedCallback(SuperSlider.OnLayoutChanged)));
 
     public event EventHandler<PropertyChangedEventArgs<double>> ValueChanged;
 
     public SuperSlider()
     {
-      this.put_DefaultStyleKey((object) typeof (SuperSlider));
-      PreventScrollBinding.SetIsEnabled((DependencyObject) this, true);
-      WindowsRuntimeMarshal.AddEventHandler<DependencyPropertyChangedEventHandler>(new Func<DependencyPropertyChangedEventHandler, EventRegistrationToken>(((Control) this).add_IsEnabledChanged), new Action<EventRegistrationToken>(((Control) this).remove_IsEnabledChanged), new DependencyPropertyChangedEventHandler(this.SuperSlider_IsEnabledChanged));
-      WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(((FrameworkElement) this).add_Loaded), new Action<EventRegistrationToken>(((FrameworkElement) this).remove_Loaded), new RoutedEventHandler(this.SuperSlider_Loaded));
-      WindowsRuntimeMarshal.AddEventHandler<SizeChangedEventHandler>(new Func<SizeChangedEventHandler, EventRegistrationToken>(((FrameworkElement) this).add_SizeChanged), new Action<EventRegistrationToken>(((FrameworkElement) this).remove_SizeChanged), new SizeChangedEventHandler(this.SuperSlider_SizeChanged));
+      this.DefaultStyleKey = typeof (SuperSlider);
+      PreventScrollBinding.SetIsEnabled(this, true);
+      ((Control)this).IsEnabledChanged += this.SuperSlider_IsEnabledChanged;
+      ((FrameworkElement)this).Loaded += this.SuperSlider_Loaded;
+      ((FrameworkElement)this).SizeChanged += this.SuperSlider_SizeChanged;
     }
 
     private void SuperSlider_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -66,84 +66,84 @@ namespace Coding4Fun.Toolkit.Controls
       this.AdjustAndUpdateLayout();
     }
 
-    protected virtual void OnApplyTemplate()
+    protected override void OnApplyTemplate()
     {
-      ((FrameworkElement) this).OnApplyTemplate();
+      base.OnApplyTemplate();
       this.BackgroundRectangle = this.GetTemplateChild("BackgroundRectangle") as Rectangle;
       this.ProgressRectangle = this.GetTemplateChild("ProgressRectangle") as Rectangle;
       if (this.GetTemplateChild("Body") is Grid templateChild)
       {
         this._monitor = new MovementMonitor();
         this._monitor.Movement += new EventHandler<MovementMonitorEventArgs>(this._monitor_Movement);
-        this._monitor.MonitorControl((Panel) templateChild);
+        this._monitor.MonitorControl(templateChild);
       }
       this.AdjustLayout();
     }
 
     public double BarHeight
     {
-      get => (double) ((DependencyObject) this).GetValue(SuperSlider.BarHeightProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.BarHeightProperty, (object) value);
+      get => (double) this.GetValue(SuperSlider.BarHeightProperty);
+      set => this.SetValue(SuperSlider.BarHeightProperty, value);
     }
 
     public double BarWidth
     {
-      get => (double) ((DependencyObject) this).GetValue(SuperSlider.BarWidthProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.BarWidthProperty, (object) value);
+      get => (double) this.GetValue(SuperSlider.BarWidthProperty);
+      set => this.SetValue(SuperSlider.BarWidthProperty, value);
     }
 
     public string Title
     {
-      get => (string) ((DependencyObject) this).GetValue(SuperSlider.TitleProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.TitleProperty, (object) value);
+      get => (string) this.GetValue(SuperSlider.TitleProperty);
+      set => this.SetValue(SuperSlider.TitleProperty, value);
     }
 
     public object Thumb
     {
-      get => ((DependencyObject) this).GetValue(SuperSlider.ThumbProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.ThumbProperty, value);
+      get => this.GetValue(SuperSlider.ThumbProperty);
+      set => this.SetValue(SuperSlider.ThumbProperty, value);
     }
 
     public double BackgroundSize
     {
-      get => (double) ((DependencyObject) this).GetValue(SuperSlider.BackgroundSizeProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.BackgroundSizeProperty, (object) value);
+      get => (double) this.GetValue(SuperSlider.BackgroundSizeProperty);
+      set => this.SetValue(SuperSlider.BackgroundSizeProperty, value);
     }
 
     public double ProgressSize
     {
-      get => (double) ((DependencyObject) this).GetValue(SuperSlider.ProgressSizeProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.ProgressSizeProperty, (object) value);
+      get => (double) this.GetValue(SuperSlider.ProgressSizeProperty);
+      set => this.SetValue(SuperSlider.ProgressSizeProperty, value);
     }
 
     public double Value
     {
-      get => (double) ((DependencyObject) this).GetValue(SuperSlider.ValueProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.ValueProperty, (object) value);
+      get => (double) this.GetValue(SuperSlider.ValueProperty);
+      set => this.SetValue(SuperSlider.ValueProperty, value);
     }
 
     public double Minimum
     {
-      get => (double) ((DependencyObject) this).GetValue(SuperSlider.MinimumProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.MinimumProperty, (object) value);
+      get => (double) this.GetValue(SuperSlider.MinimumProperty);
+      set => this.SetValue(SuperSlider.MinimumProperty, value);
     }
 
     public double Maximum
     {
-      get => (double) ((DependencyObject) this).GetValue(SuperSlider.MaximumProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.MaximumProperty, (object) value);
+      get => (double) this.GetValue(SuperSlider.MaximumProperty);
+      set => this.SetValue(SuperSlider.MaximumProperty, value);
     }
 
     public double StepFrequency
     {
-      get => (double) ((DependencyObject) this).GetValue(SuperSlider.StepProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.StepProperty, (object) value);
+      get => (double) this.GetValue(SuperSlider.StepProperty);
+      set => this.SetValue(SuperSlider.StepProperty, value);
     }
 
     public Orientation Orientation
     {
-      get => (Orientation) ((DependencyObject) this).GetValue(SuperSlider.OrientationProperty);
-      set => ((DependencyObject) this).SetValue(SuperSlider.OrientationProperty, (object) value);
+      get => (Orientation) this.GetValue(SuperSlider.OrientationProperty);
+      set => this.SetValue(SuperSlider.OrientationProperty, value);
     }
 
     private void _monitor_Movement(object sender, MovementMonitorEventArgs e)
@@ -177,7 +177,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     private double GetControlMax()
     {
-      return !this.IsVertical() ? ((FrameworkElement) this).ActualWidth : ((FrameworkElement) this).ActualHeight;
+      return !this.IsVertical() ? this.ActualWidth : this.ActualHeight;
     }
 
     private void SyncValueAndPosition(double newValue, double oldValue)
@@ -198,7 +198,7 @@ namespace Coding4Fun.Toolkit.Controls
       this.UpdateUserInterface();
       if (this.ValueChanged == null)
         return;
-      this.ValueChanged((object) this, new PropertyChangedEventArgs<double>(oldValue, this.Value));
+      this.ValueChanged(this, new PropertyChangedEventArgs<double>(oldValue, this.Value));
     }
 
     private void UpdateUserInterface()
@@ -206,12 +206,12 @@ namespace Coding4Fun.Toolkit.Controls
       double controlMax = this.GetControlMax();
       double offset = (this.Value - this.Minimum) / (this.Maximum - this.Minimum) * controlMax;
       bool isVert = this.IsVertical();
-      SuperSlider.SetSizeBasedOnOrientation((FrameworkElement) this.ProgressRectangle, isVert, offset);
+      SuperSlider.SetSizeBasedOnOrientation(this.ProgressRectangle, isVert, offset);
       if (!(this.Thumb is FrameworkElement thumb))
         return;
       double num1 = isVert ? thumb.ActualHeight : thumb.ActualWidth;
       double num2 = (offset - num1 / 2.0).CheckBound(controlMax - num1);
-      thumb.put_Margin(isVert ? new Thickness(0.0, 0.0, 0.0, num2) : new Thickness(num2, 0.0, 0.0, 0.0));
+      ((FrameworkElement)thumb).Margin = isVert ? new Thickness(0.0, 0.0, 0.0, num2) : new Thickness(num2, 0.0, 0.0, 0.0);
     }
 
     private void AdjustAndUpdateLayout()
@@ -235,24 +235,24 @@ namespace Coding4Fun.Toolkit.Controls
       {
         if (isVert)
         {
-          ((FrameworkElement) templateChild).put_Width(this.BarWidth);
-          ((FrameworkElement) templateChild).put_Height(double.NaN);
+          templateChild.Width = this.BarWidth;
+          templateChild.Height = double.NaN;
         }
         else
         {
-          ((FrameworkElement) templateChild).put_Width(double.NaN);
-          ((FrameworkElement) templateChild).put_Height(this.BarHeight);
+          templateChild.Width = double.NaN;
+          templateChild.Height = this.BarHeight;
         }
       }
-      SuperSlider.SetAlignment((FrameworkElement) this.ProgressRectangle, isVert);
-      ((FrameworkElement) this.ProgressRectangle).put_Width(double.NaN);
-      ((FrameworkElement) this.ProgressRectangle).put_Height(double.NaN);
-      ((FrameworkElement) this.BackgroundRectangle).put_Width(double.NaN);
-      ((FrameworkElement) this.BackgroundRectangle).put_Height(double.NaN);
+      SuperSlider.SetAlignment(this.ProgressRectangle, isVert);
+      this.ProgressRectangle.Width = double.NaN;
+      this.ProgressRectangle.Height = double.NaN;
+      this.BackgroundRectangle.Width = double.NaN;
+      this.BackgroundRectangle.Height = double.NaN;
       if (this.ProgressSize > 0.0)
-        SuperSlider.SetSizeBasedOnOrientation((FrameworkElement) this.ProgressRectangle, !isVert, this.ProgressSize);
+        SuperSlider.SetSizeBasedOnOrientation(this.ProgressRectangle, !isVert, this.ProgressSize);
       if (this.BackgroundSize > 0.0)
-        SuperSlider.SetSizeBasedOnOrientation((FrameworkElement) this.BackgroundRectangle, !isVert, this.BackgroundSize);
+        SuperSlider.SetSizeBasedOnOrientation(this.BackgroundRectangle, !isVert, this.BackgroundSize);
       if (this.Thumb == null)
         return;
       SuperSlider.SetAlignment(this.Thumb as FrameworkElement, isVert);
@@ -260,7 +260,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     private void IsEnabledVisualStateUpdate()
     {
-      VisualStateManager.GoToState((Control) this, this.IsEnabled ? "Normal" : "Disabled", true);
+      VisualStateManager.GoToState(this, this.IsEnabled ? "Normal" : "Disabled", true);
     }
 
     private static void SetSizeBasedOnOrientation(
@@ -271,19 +271,19 @@ namespace Coding4Fun.Toolkit.Controls
       if (control == null)
         return;
       if (isVert)
-        control.put_Height(offset);
+        control.Height = offset;
       else
-        control.put_Width(offset);
+        control.Width = offset;
     }
 
-    private bool IsVertical() => this.Orientation == 0;
+    private bool IsVertical() => this.Orientation == Orientation.Horizontal;
 
     private static void SetAlignment(FrameworkElement control, bool isVert)
     {
       if (control == null)
         return;
-      control.put_HorizontalAlignment(isVert ? (HorizontalAlignment) 3 : (HorizontalAlignment) 0);
-      control.put_VerticalAlignment(isVert ? (VerticalAlignment) 2 : (VerticalAlignment) 3);
+      control.HorizontalAlignment = isVert ? HorizontalAlignment.Right : HorizontalAlignment.Left;
+      control.VerticalAlignment = isVert ? VerticalAlignment.Bottom : VerticalAlignment.Top;
     }
   }
 }

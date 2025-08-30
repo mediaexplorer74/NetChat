@@ -1,11 +1,6 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: IGM.UI.UISetting
-// Assembly: IGM.UI.WindowsPhone, Version=1.7.12.11, Culture=neutral, PublicKeyToken=null
-// MVID: 39AE0C25-23A8-498B-8A6F-1CF45DE9A28B
-// Assembly location: C:\Users\Admin\Desktop\RE\NetChatWP8\IGM.UI.WindowsPhone.exe
-
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -15,6 +10,7 @@ using weekysoft.store.Enums;
 using weekysoft.store.Serializer;
 using Windows.Media.SpeechSynthesis;
 using Windows.Storage;
+using Windows.System;
 using Windows.System.UserProfile;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -56,6 +52,11 @@ namespace IGM.UI
       this.ChatBubbleSystemBackground = new SolidColorBrush(UISetting.GetValue<Color>(Colors.AliceBlue, "ChatBubbleSystemBackground"));
       this.ChatBubbleSystemForeground = new SolidColorBrush(UISetting.GetValue<Color>(Colors.Blue, "ChatBubbleSystemForeground"));
       this.PartiallyConfirmedBrush = new SolidColorBrush(UISetting.GetValue<Color>(Colors.LightCyan, "PartiallyConfirmedBrush"));
+      // Fixed: Initialize the new ChatBubble* properties
+      this.ChatBubbleMyBackground = new SolidColorBrush(UISetting.GetValue<Color>(Colors.LightBlue, "ChatBubbleMyBackground"));
+      this.ChatBubblePeerBackground = new SolidColorBrush(UISetting.GetValue<Color>(Colors.LightYellow, "ChatBubblePeerBackground"));
+      this.ChatBubbleMyForeground = new SolidColorBrush(UISetting.GetValue<Color>(Colors.Black, "ChatBubbleMyForeground"));
+      this.ChatBubblePeerForeground = new SolidColorBrush(UISetting.GetValue<Color>(Colors.Black, "ChatBubblePeerForeground"));
       this.ChatBubblePadding = UISetting.GetValue<Thickness>(new Thickness(0.0), "ChatBubblePadding");
       this.ChatBubbleBorderThickness = UISetting.GetValue<Thickness>(new Thickness(1.0), "ChatBubbleBorderThickness");
       this.ChatBubbleContentMargin = UISetting.GetValue<Thickness>(new Thickness(5.0, 0.0, 5.0, 0.0), "ChatBubbleContentMargin");
@@ -76,26 +77,50 @@ namespace IGM.UI
         VoiceInformation defaultVoice = SpeechSynthesizer.DefaultVoice;
         this.DefaultLanguageCode = defaultVoice.Language.ToLower();
         this.DefaultLanguage = EnumHelper.GetByKey<Language>(this.DefaultLanguageCode?.Substring(0, 2));
-        this.FemaleVoice = SpeechSynthesizer.AllVoices.FirstOrDefault<VoiceInformation>((Func<VoiceInformation, bool>) (s => s.Language.ToLower() == this.DefaultLanguageCode && s.Gender == 1));
+        this.FemaleVoice = SpeechSynthesizer.AllVoices.FirstOrDefault<VoiceInformation>((Func<VoiceInformation, bool>) (s => s.Language.ToLower() == this.DefaultLanguageCode && s.Gender == VoiceGender.Female));
         this.FemaleSpeech = new SpeechSynthesizer();
-        this.FemaleSpeech.put_Voice(this.FemaleVoice);
-        this.MaleVoice = SpeechSynthesizer.AllVoices.FirstOrDefault<VoiceInformation>((Func<VoiceInformation, bool>) (s => s.Language.ToLower() == this.DefaultLanguageCode && s.Gender == 0));
+        this.FemaleSpeech.Voice = this.FemaleVoice;
+        this.MaleVoice = SpeechSynthesizer.AllVoices.FirstOrDefault<VoiceInformation>((Func<VoiceInformation, bool>) (s => s.Language.ToLower() == this.DefaultLanguageCode && s.Gender == VoiceGender.Male));
         this.MaleSpeech = new SpeechSynthesizer();
-        this.MaleSpeech.put_Voice(this.MaleVoice);
+        this.MaleSpeech.Voice = this.MaleVoice;
         this.Speech = new SpeechSynthesizer();
         this.Voice = SpeechSynthesizer.AllVoices.FirstOrDefault<VoiceInformation>((Func<VoiceInformation, bool>) (s => s.DisplayName == UISetting.GetValue<string>(defaultVoice.DisplayName, "Voice")));
-        this.Speech.put_Voice(this.Voice);
+        this.Speech.Voice = this.Voice;
         this.Speech2 = new SpeechSynthesizer();
         this.Voice2 = SpeechSynthesizer.AllVoices.FirstOrDefault<VoiceInformation>((Func<VoiceInformation, bool>) (s => s.DisplayName == UISetting.GetValue<string>(SpeechSynthesizer.AllVoices.FirstOrDefault<VoiceInformation>((Func<VoiceInformation, bool>) (t => t.DisplayName != this.Voice.DisplayName && t.Language == this.Voice.Language))?.DisplayName, "Voice2")));
-        this.Speech2.put_Voice(this.Voice2 ?? this.Voice);
+        this.Speech2.Voice = this.Voice2 ?? this.Voice;
       }
       catch (Exception ex)
       {
         Util.LogEvent(ex);
       }
       this.BannerTag = "BANNER";
-      this.DisplayName = await UserInformation.GetDisplayNameAsync();
+      // Replace deprecated UserInformation API with newer API
+      this.DisplayName = await GetDisplayNameAsync();
       this.IsInitialized = true;
+    }
+
+    private async Task<string> GetDisplayNameAsync()
+    {
+        try
+        {
+            // Try to get the current user's display name using the newer API
+            var users = await Windows.System.User.FindAllAsync();
+            var user = users.FirstOrDefault();
+            if (user != null)
+            {
+                var displayNameProperty = await user.GetPropertyAsync(Windows.System.KnownUserProperties.DisplayName);
+                return displayNameProperty as string ?? "Unknown User";
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("[ex] UISetting error: " + ex.Message);
+            // Util.LogEvent(ex);
+        }
+        
+        // Fallback to a default value
+        return "Unknown User";
     }
 
     public SpeechSynthesizer GetSpeech(VoiceType type)
@@ -132,6 +157,11 @@ namespace IGM.UI
       UISetting.SetValue<Color>(this.ChatBubbleSystemBackground.Color, "ChatBubbleSystemBackground");
       UISetting.SetValue<Color>(this.ChatBubbleSystemForeground.Color, "ChatBubbleSystemForeground");
       UISetting.SetValue<Color>(this.PartiallyConfirmedBrush.Color, "PartiallyConfirmedBrush");
+      // Fixed: Save the new ChatBubble* properties
+      UISetting.SetValue<Color>(this.ChatBubbleMyBackground.Color, "ChatBubbleMyBackground");
+      UISetting.SetValue<Color>(this.ChatBubblePeerBackground.Color, "ChatBubblePeerBackground");
+      UISetting.SetValue<Color>(this.ChatBubbleMyForeground.Color, "ChatBubbleMyForeground");
+      UISetting.SetValue<Color>(this.ChatBubblePeerForeground.Color, "ChatBubblePeerForeground");
       UISetting.SetValue<Thickness>(this.ChatBubblePadding, "ChatBubblePadding");
       UISetting.SetValue<Thickness>(this.ChatBubbleBorderThickness, "ChatBubbleBorderThickness");
       UISetting.SetValue<Thickness>(this.ChatBubbleContentMargin, "ChatBubbleContentMargin");
@@ -167,7 +197,7 @@ namespace IGM.UI
       }
     }
 
-    private static T GetValue<T>(T defaultValue = null, [CallerMemberName] string memberName = "")
+    private static T GetValue<T>(T defaultValue = default(T), [CallerMemberName] string memberName = "")
     {
       T obj = defaultValue;
       if (!UISetting._AlwaysUseDefault)
@@ -271,5 +301,11 @@ namespace IGM.UI
     public SpeechSynthesizer FemaleSpeech { get; private set; }
 
     public SpeechSynthesizer MaleSpeech { get; private set; }
+
+    // Fixed: Add missing ChatBubble* properties
+    public SolidColorBrush ChatBubbleMyBackground { get; set; }
+    public SolidColorBrush ChatBubblePeerBackground { get; set; }
+    public SolidColorBrush ChatBubbleMyForeground { get; set; }
+    public SolidColorBrush ChatBubblePeerForeground { get; set; }
   }
 }

@@ -1,4 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
+﻿﻿// Decompiled with JetBrains decompiler
 // Type: Coding4Fun.Toolkit.Controls.SuperImage
 // Assembly: Coding4Fun.Toolkit.Controls, Version=2.1.7.0, Culture=neutral, PublicKeyToken=null
 // MVID: A56425CC-78B4-4409-A058-D6DF5D854B90
@@ -27,65 +27,65 @@ namespace Coding4Fun.Toolkit.Controls
     private Image _primaryImage;
     private Border _placeholderBorder;
     private bool _isPrimaryImageLoaded;
-    public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof (Stretch), typeof (Stretch), typeof (SuperImage), new PropertyMetadata((object) (Stretch) 0));
+    public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof (Stretch), typeof (Stretch), typeof (SuperImage), new PropertyMetadata((object) Stretch.None));
     public static readonly DependencyProperty SourcesProperty = DependencyProperty.Register(nameof (Sources), typeof (ObservableCollection<SuperImageSource>), typeof (SuperImage), new PropertyMetadata((object) null, new PropertyChangedCallback(SuperImage.OnSourcesChanged)));
     public static readonly DependencyProperty PlaceholderImageSourceProperty = DependencyProperty.Register(nameof (PlaceholderImageSource), typeof (ImageSource), typeof (SuperImage), new PropertyMetadata((object) null));
     public static readonly DependencyProperty PlaceholderOpacityProperty = DependencyProperty.Register(nameof (PlaceholderOpacity), typeof (double), typeof (SuperImage), new PropertyMetadata((object) 1.0));
     public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof (Source), typeof (ImageSource), typeof (SuperImage), new PropertyMetadata((object) null, new PropertyChangedCallback(SuperImage.OnSourceChanged)));
     public static readonly DependencyProperty PlaceholderBackgroundProperty = DependencyProperty.Register(nameof (PlaceholderBackground), typeof (SolidColorBrush), typeof (SuperImage), new PropertyMetadata((object) null));
-    public static readonly DependencyProperty PlaceholderImageStretchProperty = DependencyProperty.Register(nameof (PlaceholderImageStretch), typeof (Stretch), typeof (SuperImage), new PropertyMetadata((object) (Stretch) 0));
+    public static readonly DependencyProperty PlaceholderImageStretchProperty = DependencyProperty.Register(nameof (PlaceholderImageStretch), typeof (Stretch), typeof (SuperImage), new PropertyMetadata((object) Stretch.None));
 
     public Stretch Stretch
     {
-      get => (Stretch) ((DependencyObject) this).GetValue(SuperImage.StretchProperty);
-      set => ((DependencyObject) this).SetValue(SuperImage.StretchProperty, (object) value);
+      get => (Stretch) this.GetValue(SuperImage.StretchProperty);
+      set => this.SetValue(SuperImage.StretchProperty, value);
     }
 
     public ObservableCollection<SuperImageSource> Sources
     {
       get
       {
-        return (ObservableCollection<SuperImageSource>) ((DependencyObject) this).GetValue(SuperImage.SourcesProperty);
+        return (ObservableCollection<SuperImageSource>) this.GetValue(SuperImage.SourcesProperty);
       }
-      set => ((DependencyObject) this).SetValue(SuperImage.SourcesProperty, (object) value);
+      set => this.SetValue(SuperImage.SourcesProperty, value);
     }
 
     public ImageSource PlaceholderImageSource
     {
       get
       {
-        return (ImageSource) ((DependencyObject) this).GetValue(SuperImage.PlaceholderImageSourceProperty);
+        return (ImageSource) this.GetValue(SuperImage.PlaceholderImageSourceProperty);
       }
       set
       {
-        ((DependencyObject) this).SetValue(SuperImage.PlaceholderImageSourceProperty, (object) value);
+        this.SetValue(SuperImage.PlaceholderImageSourceProperty, value);
       }
     }
 
     public double PlaceholderOpacity
     {
-      get => (double) ((DependencyObject) this).GetValue(SuperImage.PlaceholderOpacityProperty);
+      get => (double) this.GetValue(SuperImage.PlaceholderOpacityProperty);
       set
       {
-        ((DependencyObject) this).SetValue(SuperImage.PlaceholderOpacityProperty, (object) value);
+        this.SetValue(SuperImage.PlaceholderOpacityProperty, value);
       }
     }
 
     public ImageSource Source
     {
-      get => (ImageSource) ((DependencyObject) this).GetValue(SuperImage.SourceProperty);
-      set => ((DependencyObject) this).SetValue(SuperImage.SourceProperty, (object) value);
+      get => (ImageSource) this.GetValue(SuperImage.SourceProperty);
+      set => this.SetValue(SuperImage.SourceProperty, value);
     }
 
     public SolidColorBrush PlaceholderBackground
     {
       get
       {
-        return (SolidColorBrush) ((DependencyObject) this).GetValue(SuperImage.PlaceholderBackgroundProperty);
+        return (SolidColorBrush) this.GetValue(SuperImage.PlaceholderBackgroundProperty);
       }
       set
       {
-        ((DependencyObject) this).SetValue(SuperImage.PlaceholderBackgroundProperty, (object) value);
+        this.SetValue(SuperImage.PlaceholderBackgroundProperty, value);
       }
     }
 
@@ -93,11 +93,11 @@ namespace Coding4Fun.Toolkit.Controls
     {
       get
       {
-        return (Stretch) ((DependencyObject) this).GetValue(SuperImage.PlaceholderImageStretchProperty);
+        return (Stretch) this.GetValue(SuperImage.PlaceholderImageStretchProperty);
       }
       set
       {
-        ((DependencyObject) this).SetValue(SuperImage.PlaceholderImageStretchProperty, (object) value);
+        this.SetValue(SuperImage.PlaceholderImageStretchProperty, value);
       }
     }
 
@@ -145,7 +145,7 @@ namespace Coding4Fun.Toolkit.Controls
       }
       if (superImageSource == null)
         return;
-      this._primaryImage.put_Source(superImageSource.Source.ToBitmapImage());
+      this._primaryImage.Source = superImageSource.Source.ToBitmapImage();
     }
 
     private void OnPrimaryImageOpened(object sender, RoutedEventArgs routedEventArgs)
@@ -164,41 +164,37 @@ namespace Coding4Fun.Toolkit.Controls
     {
       if (this._placeholderBorder == null)
         return;
-      ((UIElement) this._placeholderBorder).put_Visibility(this._isPrimaryImageLoaded ? (Visibility) 1 : (Visibility) 0);
+      ((UIElement)this._placeholderBorder).Visibility = this._isPrimaryImageLoaded ? Visibility.Collapsed : Visibility.Visible;
     }
 
     public SuperImage()
     {
-      this.put_DefaultStyleKey((object) typeof (SuperImage));
+      this.DefaultStyleKey = typeof (SuperImage);
       this.Sources = new ObservableCollection<SuperImageSource>();
     }
 
-    protected virtual void OnApplyTemplate()
+    protected override void OnApplyTemplate()
     {
-      ((FrameworkElement) this).OnApplyTemplate();
+      base.OnApplyTemplate();
       if (this._primaryImage != null)
       {
-        WindowsRuntimeMarshal.RemoveEventHandler<RoutedEventHandler>(new Action<EventRegistrationToken>(this._primaryImage.remove_ImageOpened), new RoutedEventHandler(this.OnPrimaryImageOpened));
-        WindowsRuntimeMarshal.RemoveEventHandler<ExceptionRoutedEventHandler>(new Action<EventRegistrationToken>(this._primaryImage.remove_ImageFailed), new ExceptionRoutedEventHandler(this.OnPrimaryImageFailed));
+        ((Image)this._primaryImage).ImageOpened -= new RoutedEventHandler(this.OnPrimaryImageOpened);
+        ((Image)this._primaryImage).ImageFailed -= new ExceptionRoutedEventHandler(this.OnPrimaryImageFailed);
       }
       this._primaryImage = this.GetTemplateChild("PrimaryImage") as Image;
       this._placeholderBorder = this.GetTemplateChild("PlaceholderBorder") as Border;
       this._isPrimaryImageLoaded = false;
       if (this._primaryImage != null)
       {
-        Image primaryImage1 = this._primaryImage;
-        WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(primaryImage1.add_ImageOpened), new Action<EventRegistrationToken>(primaryImage1.remove_ImageOpened), new RoutedEventHandler(this.OnPrimaryImageOpened));
-        Image primaryImage2 = this._primaryImage;
-        WindowsRuntimeMarshal.AddEventHandler<ExceptionRoutedEventHandler>(new Func<ExceptionRoutedEventHandler, EventRegistrationToken>(primaryImage2.add_ImageFailed), new Action<EventRegistrationToken>(primaryImage2.remove_ImageFailed), new ExceptionRoutedEventHandler(this.OnPrimaryImageFailed));
+        ((Image)this._primaryImage).ImageOpened += this.OnPrimaryImageOpened;
+        ((Image)this._primaryImage).ImageFailed += this.OnPrimaryImageFailed;
       }
       if (this.Source != null)
       {
-        Image primaryImage = this._primaryImage;
-        DependencyProperty sourceProperty = Image.SourceProperty;
-        Binding binding = new Binding();
-        binding.put_Path(new PropertyPath("Source"));
-        binding.put_Source((object) this);
-        ((FrameworkElement) primaryImage).SetBinding(sourceProperty, (BindingBase) binding);
+        Windows.UI.Xaml.Data.Binding binding = new Windows.UI.Xaml.Data.Binding();
+        binding.Path = new PropertyPath("Source");
+        binding.Source = this;
+        this._primaryImage.SetBinding(Image.SourceProperty, binding);
         this.OnSourcePropertyChanged();
       }
       else

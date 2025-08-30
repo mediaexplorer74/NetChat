@@ -32,14 +32,14 @@ namespace Coding4Fun.Toolkit.Controls
 
     public event EventHandler Opened;
 
-    protected virtual void OnApplyTemplate()
+    protected override void OnApplyTemplate()
     {
-      ((FrameworkElement) this).OnApplyTemplate();
+      base.OnApplyTemplate();
       if (this.PopUpService == null)
         return;
       this.PopUpService.BackgroundBrush = this.Overlay;
       this.PopUpService.ApplyOverlayBackground();
-      this.PopUpService.SetAlignmentsOnOverlay(((FrameworkElement) this).HorizontalAlignment, ((FrameworkElement) this).VerticalAlignment);
+      this.PopUpService.SetAlignmentsOnOverlay(this.HorizontalAlignment, this.VerticalAlignment);
     }
 
     public virtual async void Show()
@@ -52,7 +52,7 @@ namespace Coding4Fun.Toolkit.Controls
         this.PopUpService = new DialogService()
         {
           AnimationType = this.AnimationType,
-          Child = (FrameworkElement) this,
+          Child = this,
           IsBackKeyOverride = this.IsBackKeyOverride,
           IsOverlayApplied = this.IsOverlayApplied,
           MainBodyDelay = this.MainBodyDelay
@@ -60,10 +60,7 @@ namespace Coding4Fun.Toolkit.Controls
       if (this.PopUpService.Page == null)
       {
         CoreDispatcher dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
-        PopUp<T, TPopUpResult> popUp = this;
-        // ISSUE: virtual method pointer
-        DispatchedHandler dispatchedHandler = new DispatchedHandler((object) popUp, __vmethodptr(popUp, Show));
-        await dispatcher.RunAsync((CoreDispatcherPriority) 0, dispatchedHandler);
+        await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => this.Show());
       }
       else
       {
@@ -73,9 +70,9 @@ namespace Coding4Fun.Toolkit.Controls
         this.PopUpService.Opened -= new EventHandler(this.PopUpOpened);
         this.PopUpService.Closed += new EventHandler(this.PopUpClosed);
         this.PopUpService.Opened += new EventHandler(this.PopUpOpened);
-        if (!this.IsAppBarVisible && this.PopUpService.Page.BottomAppBar != null && ((UIElement) this.PopUpService.Page.BottomAppBar).Visibility == null)
+        if (!this.IsAppBarVisible && this.PopUpService.Page.BottomAppBar != null && this.PopUpService.Page.BottomAppBar.Visibility == Visibility.Visible)
         {
-          ((UIElement) this.PopUpService.Page.BottomAppBar).put_Visibility((Visibility) 1);
+          this.PopUpService.Page.BottomAppBar.Visibility = Visibility.Collapsed;
           this.IsSetAppBarVisibiilty = true;
         }
         this._startingPage = this.PopUpService.Page;
@@ -85,7 +82,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     protected virtual TPopUpResult GetOnClosedValue() => default (TPopUpResult);
 
-    public void Hide() => this.PopUpClosed((object) this, (EventArgs) null);
+    public void Hide() => this.PopUpClosed(this, null);
 
     private void PopUpOpened(object sender, EventArgs e)
     {
@@ -109,7 +106,7 @@ namespace Coding4Fun.Toolkit.Controls
     {
       this._alreadyFired = true;
       if (this.Completed != null)
-        this.Completed((object) this, result);
+        this.Completed(this, result);
       if (this.PopUpService != null)
         this.PopUpService.Hide();
       if (this.PopUpService == null || !this.PopUpService.BackButtonPressed)
@@ -122,10 +119,10 @@ namespace Coding4Fun.Toolkit.Controls
       if (this.PopUpService == null)
         return;
       if (!this.IsAppBarVisible && this.IsSetAppBarVisibiilty)
-        ((UIElement) this._startingPage.BottomAppBar).put_Visibility(this.IsSetAppBarVisibiilty ? (Visibility) 0 : (Visibility) 1);
-      this._startingPage = (Page) null;
-      this.PopUpService.Child = (FrameworkElement) null;
-      this.PopUpService = (DialogService) null;
+        this._startingPage.BottomAppBar.Visibility = this.IsSetAppBarVisibiilty ? Visibility.Visible : Visibility.Collapsed;
+      this._startingPage = null;
+      this.PopUpService.Child = null;
+      this.PopUpService = null;
     }
 
     private static void OnFrameTransformPropertyChanged(
@@ -150,13 +147,13 @@ namespace Coding4Fun.Toolkit.Controls
         this._isCalculateFrameVerticalOffset = value;
         if (!this._isCalculateFrameVerticalOffset)
           return;
-        Binding binding = new Binding();
-        binding.put_Path(new PropertyPath("Y"));
+        Windows.UI.Xaml.Data.Binding binding = new Windows.UI.Xaml.Data.Binding();
+        binding.Path = new PropertyPath("Y");
         Frame rootFrame = ApplicationSpace.RootFrame;
-        if (rootFrame == null || !(((UIElement) rootFrame).RenderTransform is TransformGroup renderTransform))
+        if (rootFrame == null || !(rootFrame.RenderTransform is TransformGroup renderTransform))
           return;
-        binding.put_Source((object) ((IEnumerable<Transform>) renderTransform.Children).FirstOrDefault<Transform>((Func<Transform, bool>) (t => t is TranslateTransform)));
-        ((FrameworkElement) this).SetBinding(PopUp<T, TPopUpResult>.FrameTransformProperty, (BindingBase) binding);
+        binding.Source = ((IEnumerable<Transform>) renderTransform.Children).FirstOrDefault<Transform>((Func<Transform, bool>) (t => t is TranslateTransform));
+        this.SetBinding(PopUp<T, TPopUpResult>.FrameTransformProperty, binding);
       }
     }
 
@@ -178,20 +175,20 @@ namespace Coding4Fun.Toolkit.Controls
     {
       get
       {
-        return (double) ((DependencyObject) this).GetValue(PopUp<T, TPopUpResult>.FrameTransformProperty);
+        return (double) this.GetValue(PopUp<T, TPopUpResult>.FrameTransformProperty);
       }
       set
       {
-        ((DependencyObject) this).SetValue(PopUp<T, TPopUpResult>.FrameTransformProperty, (object) value);
+        this.SetValue(PopUp<T, TPopUpResult>.FrameTransformProperty, value);
       }
     }
 
     public Brush Overlay
     {
-      get => (Brush) ((DependencyObject) this).GetValue(PopUp<T, TPopUpResult>.OverlayProperty);
+      get => (Brush) this.GetValue(PopUp<T, TPopUpResult>.OverlayProperty);
       set
       {
-        ((DependencyObject) this).SetValue(PopUp<T, TPopUpResult>.OverlayProperty, (object) value);
+        this.SetValue(PopUp<T, TPopUpResult>.OverlayProperty, value);
       }
     }
   }

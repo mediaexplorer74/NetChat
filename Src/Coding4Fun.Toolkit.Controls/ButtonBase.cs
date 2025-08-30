@@ -14,12 +14,12 @@ namespace Coding4Fun.Toolkit.Controls
   {
     public static readonly DependencyProperty LabelProperty = DependencyProperty.Register(nameof (Label), typeof (object), typeof (ButtonBase), new PropertyMetadata((object) string.Empty));
 
-    protected virtual void OnApplyTemplate() => ((FrameworkElement) this).OnApplyTemplate();
+    protected override void OnApplyTemplate() => base.OnApplyTemplate();
 
     public object Label
     {
-      get => ((DependencyObject) this).GetValue(ButtonBase.LabelProperty);
-      set => ((DependencyObject) this).SetValue(ButtonBase.LabelProperty, value);
+      get => this.GetValue(ButtonBase.LabelProperty);
+      set => this.SetValue(ButtonBase.LabelProperty, value);
     }
   }
 }

@@ -1,4 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
+// Decompiled with JetBrains decompiler
 // Type: Coding4Fun.Toolkit.Controls.ProgressOverlay
 // Assembly: Coding4Fun.Toolkit.Controls, Version=2.1.7.0, Culture=neutral, PublicKeyToken=null
 // MVID: A56425CC-78B4-4409-A058-D6DF5D854B90
@@ -25,38 +25,31 @@ namespace Coding4Fun.Toolkit.Controls
 
     public ProgressOverlay()
     {
-      ((Control) this).put_DefaultStyleKey((object) typeof (ProgressOverlay));
+      this.DefaultStyleKey = typeof (ProgressOverlay);
     }
 
-    public object ProgressControl
+    protected override void OnApplyTemplate()
     {
-      get => ((DependencyObject) this).GetValue(ProgressOverlay.ProgressControlProperty);
-      set => ((DependencyObject) this).SetValue(ProgressOverlay.ProgressControlProperty, value);
-    }
-
-    protected virtual void OnApplyTemplate()
-    {
-      ((FrameworkElement) this).OnApplyTemplate();
-      this._fadeIn = ((Control) this).GetTemplateChild("FadeInStoryboard") as Storyboard;
-      this._fadeOut = ((Control) this).GetTemplateChild("FadeOutStoryboard") as Storyboard;
-      this._layoutGrid = ((Control) this).GetTemplateChild("LayoutGrid") as Grid;
+      base.OnApplyTemplate();
+      this._fadeIn = this.GetTemplateChild("FadeInStoryboard") as Storyboard;
+      this._fadeOut = this.GetTemplateChild("FadeOutStoryboard") as Storyboard;
+      this._layoutGrid = this.GetTemplateChild("LayoutGrid") as Grid;
       if (this._fadeOut == null)
         return;
-      Storyboard fadeOut = this._fadeOut;
-      WindowsRuntimeMarshal.AddEventHandler<EventHandler<object>>(new Func<EventHandler<object>, EventRegistrationToken>(((Timeline) fadeOut).add_Completed), new Action<EventRegistrationToken>(((Timeline) fadeOut).remove_Completed), new EventHandler<object>(this.FadeOutCompleted));
+      ((Timeline)this._fadeOut).Completed += new EventHandler<object>(this.FadeOutCompleted);
     }
 
     private void FadeOutCompleted(object sender, object o)
     {
-      ((UIElement) this._layoutGrid).put_Opacity(1.0);
-      ((UIElement) this).put_Visibility((Visibility) 1);
+      ((UIElement)this._layoutGrid).Opacity = 1.0;
+      ((UIElement)this).Visibility = Visibility.Collapsed;
     }
 
     public void Show()
     {
       if (this._fadeIn == null)
-        ((Control) this).ApplyTemplate();
-      ((UIElement) this).put_Visibility((Visibility) 0);
+        this.ApplyTemplate();
+      ((UIElement)this).Visibility = Visibility.Visible;
       if (this._fadeOut != null)
         this._fadeOut.Stop();
       if (this._fadeIn == null)
@@ -67,12 +60,18 @@ namespace Coding4Fun.Toolkit.Controls
     public void Hide()
     {
       if (this._fadeOut == null)
-        ((Control) this).ApplyTemplate();
+        this.ApplyTemplate();
       if (this._fadeIn != null)
         this._fadeIn.Stop();
       if (this._fadeOut == null)
         return;
       this._fadeOut.Begin();
+    }
+    
+    public object ProgressControl
+    {
+      get => this.GetValue(ProgressOverlay.ProgressControlProperty);
+      set => this.SetValue(ProgressOverlay.ProgressControlProperty, value);
     }
   }
 }

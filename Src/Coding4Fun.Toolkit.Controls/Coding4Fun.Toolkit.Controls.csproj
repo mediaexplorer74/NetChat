@@ -133,16 +133,6 @@
     <Compile Include="ChatBubbleDirection.cs" />
     <Compile Include="ChatBubbleTextBox.cs" />
     <Compile Include="Clarity\Phone\Extensions\DialogService.cs" />
-    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\Activator.cs" />
-    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\AddToCollection.cs" />
-    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\AddToDictionary.cs" />
-    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\Getter.cs" />
-    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\Setter.cs" />
-    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlMember.cs" />
-    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlMetaDataProvider.cs" />
-    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlSystemBaseType.cs" />
-    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlTypeInfoProvider.cs" />
-    <Compile Include="Coding4Fun_Toolkit_Controls__WP81__XamlTypeInfo\XamlUserType.cs" />
     <Compile Include="ColorBaseControl.cs" />
     <Compile Include="ColorHexagonPicker.cs" />
     <Compile Include="ColorPicker.cs" />

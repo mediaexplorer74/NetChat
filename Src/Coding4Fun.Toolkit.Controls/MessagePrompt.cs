@@ -17,15 +17,15 @@ namespace Coding4Fun.Toolkit.Controls
 
     public MessagePrompt()
     {
-      this.put_DefaultStyleKey((object) typeof (MessagePrompt));
+      this.DefaultStyleKey = typeof (MessagePrompt);
       this.MessageChanged = new Action(this.SetBodyMessage);
     }
 
     protected internal void SetBodyMessage()
     {
       TextBlock textBlock = new TextBlock();
-      textBlock.put_Text(this.Message);
-      textBlock.put_TextWrapping((TextWrapping) 2);
+      textBlock.Text = this.Message;
+      textBlock.TextWrapping = TextWrapping.Wrap;
       this.Body = (object) textBlock;
     }
 

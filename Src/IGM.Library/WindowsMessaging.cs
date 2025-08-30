@@ -1,4 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
+// Decompiled with JetBrains decompiler
 // Type: IGM.Library.WindowsMessaging
 // Assembly: IGM.Library, Version=1.7.12.11, Culture=neutral, PublicKeyToken=null
 // MVID: 843F6794-B124-487F-905F-30809B16B79B
@@ -107,22 +107,7 @@ namespace IGM.Library
           {
             string str = strArray[index];
             DatagramSocket ds = new DatagramSocket();
-            DatagramSocket datagramSocket = ds;
-            Func<TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs>, EventRegistrationToken> 
-                            addMethod = new Func<TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs>, 
-                            EventRegistrationToken>(datagramSocket.add_MessageReceived);
-
-            Action<EventRegistrationToken> removeMethod = new Action<EventRegistrationToken>(
-                datagramSocket.remove_MessageReceived);
-
-            WindowsMessaging windowsMessaging = this;
-            // ISSUE: virtual method pointer
-            TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs> handler 
-                            = new TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs>((object) windowsMessaging, 
-                __vmethodptr(windowsMessaging, _Listener_MessageReceived));
-
-            WindowsRuntimeMarshal.AddEventHandler<TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs>>(
-                addMethod, removeMethod, handler);
+            ds.MessageReceived += _Listener_MessageReceived;
             await ds.BindEndpointAsync(new HostName(hn), str);
             this.Listeners.Add(ds);
             ds = (DatagramSocket) null;
@@ -137,22 +122,7 @@ namespace IGM.Library
         {
           string str = strArray[index];
           DatagramSocket datagramSocket1 = new DatagramSocket();
-          DatagramSocket datagramSocket2 = datagramSocket1;
-          Func<TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs>, EventRegistrationToken> addMethod 
-                        = new Func<TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs>, 
-                        EventRegistrationToken>(datagramSocket2.add_MessageReceived);
-          Action<EventRegistrationToken> removeMethod = new Action<EventRegistrationToken>(
-              datagramSocket2.remove_MessageReceived);
-
-          WindowsMessaging windowsMessaging = this;
-
-          // ISSUE: virtual method pointer
-          TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs> handler 
-                        = new TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs>((object) windowsMessaging, 
-              __vmethodptr(windowsMessaging, _Listener_MessageReceived));
-
-          WindowsRuntimeMarshal.AddEventHandler<TypedEventHandler<DatagramSocket,
-              DatagramSocketMessageReceivedEventArgs>>(addMethod, removeMethod, handler);
+          datagramSocket1.MessageReceived += _Listener_MessageReceived;
           this.Listeners.Add(datagramSocket1);
           await datagramSocket1.BindServiceNameAsync(str);
         }

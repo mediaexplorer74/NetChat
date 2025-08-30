@@ -56,24 +56,24 @@ namespace Coding4Fun.Toolkit.Controls.Common
       float num = 1f / (float) colors.Length;
       for (int index = 0; index < colors.Length; ++index)
       {
-        GradientStopCollection gradientStops = ((GradientBrush) gradientBrush).GradientStops;
+        GradientStopCollection gradientStops = gradientBrush.GradientStops;
         GradientStop gradientStop = new GradientStop();
-        gradientStop.put_Offset((double) num * (double) index);
-        gradientStop.put_Color(colors[index]);
-        ((ICollection<GradientStop>) gradientStops).Add(gradientStop);
+        gradientStop.Offset = (double) num * (double) index;
+        gradientStop.Color = colors[index];
+        gradientStops.Add(gradientStop);
       }
-      GradientStopCollection gradientStops1 = ((GradientBrush) gradientBrush).GradientStops;
+      GradientStopCollection gradientStops1 = gradientBrush.GradientStops;
       GradientStop gradientStop1 = new GradientStop();
-      gradientStop1.put_Offset((double) num * (double) colors.Length);
-      gradientStop1.put_Color(colors[0]);
-      ((ICollection<GradientStop>) gradientStops1).Add(gradientStop1);
-      if (orientation == null)
+      gradientStop1.Offset = (double) num * (double) colors.Length;
+      gradientStop1.Color = colors[0];
+      gradientStops1.Add(gradientStop1);
+      if (orientation == Orientation.Vertical)
       {
-        gradientBrush.put_StartPoint(new Point(0.0, 1.0));
-        gradientBrush.put_EndPoint(new Point());
+        gradientBrush.StartPoint = new Point(0.0, 1.0);
+        gradientBrush.EndPoint = new Point();
       }
       else
-        gradientBrush.put_EndPoint(new Point(1.0, 0.0));
+        gradientBrush.EndPoint = new Point(1.0, 0.0);
       return gradientBrush;
     }
 

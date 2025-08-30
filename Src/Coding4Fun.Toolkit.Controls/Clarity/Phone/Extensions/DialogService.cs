@@ -1,17 +1,7 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Clarity.Phone.Extensions.DialogService
-// Assembly: Coding4Fun.Toolkit.Controls, Version=2.1.7.0, Culture=neutral, PublicKeyToken=null
-// MVID: A56425CC-78B4-4409-A058-D6DF5D854B90
-// Assembly location: C:\Users\Admin\Desktop\RE\NetChatWP8\Coding4Fun.Toolkit.Controls.dll
-
-using Coding4Fun.Toolkit.Controls;
-using Coding4Fun.Toolkit.Controls.Binding;
-using Coding4Fun.Toolkit.Controls.Common;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Coding4Fun.Toolkit.Controls.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Phone.UI.Input;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -19,6 +9,7 @@ using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Media.Imaging;
 
 
 namespace Clarity.Phone.Extensions
@@ -76,284 +67,246 @@ namespace Clarity.Phone.Extensions
     {
       get
       {
-        return this._page ?? (this._page = ((FrameworkElement) this.RootFrame).GetFirstLogicalChildByType<Page>(false));
+        return _page ?? (_page = RootFrame?.Content as Page);
       }
     }
 
-    internal Frame RootFrame => this._rootFrame ?? (this._rootFrame = ApplicationSpace.RootFrame);
+    internal Frame RootFrame => _rootFrame ?? (_rootFrame = ApplicationSpace.RootFrame);
 
     internal Panel PopupContainer
     {
       get
       {
-        if (this._popupContainer == null)
+        if (_popupContainer == null)
         {
-          IEnumerable<ContentPresenter> logicalChildrenByType1 = ((FrameworkElement) this.RootFrame).GetLogicalChildrenByType<ContentPresenter>(false);
-          for (int index = 0; index < logicalChildrenByType1.Count<ContentPresenter>(); ++index)
+          // Find the main content panel in the current window
+          if (RootFrame?.Content is Page page)
           {
-            IEnumerable<Panel> logicalChildrenByType2 = ((FrameworkElement) logicalChildrenByType1.ElementAt<ContentPresenter>(index)).GetLogicalChildrenByType<Panel>(false);
-            if (logicalChildrenByType2.Any<Panel>())
-            {
-              this._popupContainer = logicalChildrenByType2.First<Panel>();
-              break;
-            }
+            _popupContainer = FindVisualChild<Panel>(page) ?? page.Content as Panel;
           }
         }
-        return this._popupContainer;
+        return _popupContainer;
       }
+    }
+
+    private T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+    {
+      for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+      {
+        var child = VisualTreeHelper.GetChild(parent, i);
+        if (child is T result)
+          return result;
+        
+        var childOfChild = FindVisualChild<T>(child);
+        if (childOfChild != null)
+          return childOfChild;
+      }
+      return null;
     }
 
     public DialogService()
     {
-      this.AnimationType = DialogService.AnimationTypes.Slide;
-      this.BackButtonPressed = false;
+      AnimationType = AnimationTypes.Slide;
+      BackButtonPressed = false;
     }
 
     private void InitializePopup()
     {
-      this._childPanel = this.CreateGrid();
-      if (this.IsOverlayApplied)
+      _childPanel = CreateGrid();
+      if (IsOverlayApplied)
       {
-        this._overlay = this.CreateGrid();
-        PreventScrollBinding.SetIsEnabled((DependencyObject) this._overlay, true);
+        _overlay = CreateGrid();
       }
-      this.ApplyOverlayBackground();
-      if (this.PopupContainer != null)
+      ApplyOverlayBackground();
+      if (PopupContainer != null)
       {
-        if (this._overlay != null)
-          ((ICollection<UIElement>) this.PopupContainer.Children).Add((UIElement) this._overlay);
-        ((ICollection<UIElement>) this.PopupContainer.Children).Add((UIElement) this._childPanel);
-        ((ICollection<UIElement>) ((Panel) this._childPanel).Children).Add((UIElement) this.Child);
+        if (_overlay != null)
+          PopupContainer.Children.Add(_overlay);
+        PopupContainer.Children.Add(_childPanel);
+        _childPanel.Children.Add(Child);
       }
       else
       {
-        this._deferredShowToLoaded = true;
-        Frame rootFrame = this.RootFrame;
-        WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(((FrameworkElement) rootFrame).add_Loaded), new Action<EventRegistrationToken>(((FrameworkElement) rootFrame).remove_Loaded), new RoutedEventHandler(this.RootFrameDeferredShowLoaded));
+        _deferredShowToLoaded = true;
+        RootFrame.Loaded += RootFrameDeferredShowLoaded;
       }
     }
 
     internal void ApplyOverlayBackground()
     {
-      if (!this.IsOverlayApplied || this.BackgroundBrush == null)
+      if (!IsOverlayApplied || BackgroundBrush == null || _overlay == null)
         return;
-      ((Panel) this._overlay).put_Background(this.BackgroundBrush);
+      _overlay.Background = BackgroundBrush;
     }
 
     private Grid CreateGrid()
     {
-      Grid grid1 = new Grid();
-      ((FrameworkElement) grid1).put_Name(Guid.NewGuid().ToString());
-      Grid grid2 = grid1;
-      Grid.SetColumnSpan((FrameworkElement) grid2, int.MaxValue);
-      Grid.SetRowSpan((FrameworkElement) grid2, int.MaxValue);
-      ((UIElement) grid2).put_Opacity(0.0);
-      this.CalculateVerticalOffset((Panel) grid2);
-      return grid2;
+      var grid = new Grid
+      {
+        Name = Guid.NewGuid().ToString()
+      };
+      Grid.SetColumnSpan(grid, int.MaxValue);
+      Grid.SetRowSpan(grid, int.MaxValue);
+      grid.Opacity = 0.0;
+      CalculateVerticalOffset(grid);
+      return grid;
     }
 
     internal void CalculateVerticalOffset()
     {
-      this.CalculateVerticalOffset((Panel) this._childPanel);
+      CalculateVerticalOffset(_childPanel);
     }
 
     internal void CalculateVerticalOffset(Panel panel)
     {
       if (panel == null)
         return;
-      int num = 0;
-      ((FrameworkElement) panel).put_Margin(new Thickness(0.0, this.VerticalOffset + (double) num + this.ControlVerticalOffset, 0.0, 0.0));
+      panel.Margin = new Thickness(0.0, VerticalOffset + ControlVerticalOffset, 0.0, 0.0);
     }
 
     private void RootFrameDeferredShowLoaded(object sender, RoutedEventArgs e)
     {
-      WindowsRuntimeMarshal.RemoveEventHandler<RoutedEventHandler>(new Action<EventRegistrationToken>(((FrameworkElement) this.RootFrame).remove_Loaded), new RoutedEventHandler(this.RootFrameDeferredShowLoaded));
-      this._deferredShowToLoaded = false;
-      this.Show();
+      RootFrame.Loaded -= RootFrameDeferredShowLoaded;
+      _deferredShowToLoaded = false;
+      Show();
     }
 
     protected internal void SetAlignmentsOnOverlay(
       HorizontalAlignment horizontalAlignment,
       VerticalAlignment verticalAlignment)
     {
-      if (this._childPanel == null)
+      if (_childPanel == null)
         return;
-      ((FrameworkElement) this._childPanel).put_HorizontalAlignment(horizontalAlignment);
-      ((FrameworkElement) this._childPanel).put_VerticalAlignment(verticalAlignment);
+      _childPanel.HorizontalAlignment = horizontalAlignment;
+      _childPanel.VerticalAlignment = verticalAlignment;
     }
 
     public void Show()
     {
-      lock (DialogService.Lockobj)
+      lock (Lockobj)
       {
-        WindowsRuntimeMarshal.RemoveEventHandler<EventHandler<BackPressedEventArgs>>(new Action<EventRegistrationToken>(HardwareButtons.remove_BackPressed), new EventHandler<BackPressedEventArgs>(this.OnBackKeyPress));
-        this.IsOpen = true;
-        this.InitializePopup();
-        if (this._deferredShowToLoaded)
+        // UWP doesn't use HardwareButtons.BackPressed like Windows Phone
+        // Back button handling should be done through SystemNavigationManager in UWP
+        IsOpen = true;
+        InitializePopup();
+        if (_deferredShowToLoaded)
           return;
-        if (!this.IsBackKeyOverride)
-          WindowsRuntimeMarshal.AddEventHandler<EventHandler<BackPressedEventArgs>>(new Func<EventHandler<BackPressedEventArgs>, EventRegistrationToken>(HardwareButtons.add_BackPressed), new Action<EventRegistrationToken>(HardwareButtons.remove_BackPressed), new EventHandler<BackPressedEventArgs>(this.OnBackKeyPress));
-        Frame rootFrame = this.RootFrame;
-        WindowsRuntimeMarshal.AddEventHandler<NavigatedEventHandler>(new Func<NavigatedEventHandler, EventRegistrationToken>(rootFrame.add_Navigated), new Action<EventRegistrationToken>(rootFrame.remove_Navigated), new NavigatedEventHandler(this.OnNavigated));
-        this.RunShowStoryboard((UIElement) this._overlay, DialogService.AnimationTypes.Fade);
-        this.RunShowStoryboard((UIElement) this._childPanel, this.AnimationType, this.MainBodyDelay);
-        if (this.Opened == null)
-          return;
-        this.Opened((object) this, (EventArgs) null);
+          
+        Frame rootFrame = RootFrame;
+        rootFrame.Navigated += OnNavigated;
+        RunShowStoryboard(_overlay, AnimationTypes.Fade);
+        RunShowStoryboard(_childPanel, AnimationType, MainBodyDelay);
+        Opened?.Invoke(this, EventArgs.Empty);
       }
     }
 
-    private void RunShowStoryboard(UIElement grid, DialogService.AnimationTypes animation)
+    private void RunShowStoryboard(UIElement grid, AnimationTypes animation)
     {
-      this.RunShowStoryboard(grid, animation, TimeSpan.MinValue);
+      RunShowStoryboard(grid, animation, TimeSpan.MinValue);
     }
 
     private async void RunShowStoryboard(
       UIElement grid,
-      DialogService.AnimationTypes animation,
+      AnimationTypes animation,
       TimeSpan delay)
-    {
-      // ISSUE: object of a compiler-generated type is created
-      // ISSUE: variable of a compiler-generated type
-      DialogService.\u003C\u003Ec__DisplayClass82_0 cDisplayClass820 = new DialogService.\u003C\u003Ec__DisplayClass82_0();
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass820.grid = grid;
-      // ISSUE: reference to a compiler-generated field
-      if (cDisplayClass820.grid == null)
-        return;
-      switch (animation)
-      {
-        case DialogService.AnimationTypes.Slide:
-          // ISSUE: reference to a compiler-generated field
-          cDisplayClass820.storyboard = XamlReader.Load("\r\n        <Storyboard  xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">\r\n            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty=\"(UIElement.RenderTransform).(TranslateTransform.Y)\">\r\n                <EasingDoubleKeyFrame KeyTime=\"0\" Value=\"150\"/>\r\n                <EasingDoubleKeyFrame KeyTime=\"0:0:0.35\" Value=\"0\">\r\n                    <EasingDoubleKeyFrame.EasingFunction>\r\n                        <ExponentialEase EasingMode=\"EaseOut\" Exponent=\"6\"/>\r\n                    </EasingDoubleKeyFrame.EasingFunction>\r\n                </EasingDoubleKeyFrame>\r\n            </DoubleAnimationUsingKeyFrames>\r\n            <DoubleAnimation Storyboard.TargetProperty=\"(UIElement.Opacity)\" From=\"0\" To=\"1\" Duration=\"0:0:0.350\">\r\n                <DoubleAnimation.EasingFunction>\r\n                    <ExponentialEase EasingMode=\"EaseOut\" Exponent=\"6\"/>\r\n                </DoubleAnimation.EasingFunction>\r\n            </DoubleAnimation>\r\n        </Storyboard>") as Storyboard;
-          // ISSUE: reference to a compiler-generated field
-          cDisplayClass820.grid.put_RenderTransform((Transform) new TranslateTransform());
-          break;
-        case DialogService.AnimationTypes.SlideHorizontal:
-          // ISSUE: reference to a compiler-generated field
-          cDisplayClass820.storyboard = XamlReader.Load("\r\n        <Storyboard  xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">\r\n            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty=\"(UIElement.RenderTransform).(TranslateTransform.X)\" >\r\n                    <EasingDoubleKeyFrame KeyTime=\"0\" Value=\"-150\"/>\r\n                    <EasingDoubleKeyFrame KeyTime=\"0:0:0.35\" Value=\"0\">\r\n                        <EasingDoubleKeyFrame.EasingFunction>\r\n                            <ExponentialEase EasingMode=\"EaseOut\" Exponent=\"6\"/>\r\n                        </EasingDoubleKeyFrame.EasingFunction>\r\n                    </EasingDoubleKeyFrame>\r\n                </DoubleAnimationUsingKeyFrames>\r\n            <DoubleAnimation Storyboard.TargetProperty=\"(UIElement.Opacity)\" From=\"0\" To=\"1\" Duration=\"0:0:0.350\" >\r\n                <DoubleAnimation.EasingFunction>\r\n                    <ExponentialEase EasingMode=\"EaseOut\" Exponent=\"6\"/>\r\n                </DoubleAnimation.EasingFunction>\r\n            </DoubleAnimation>\r\n        </Storyboard>") as Storyboard;
-          // ISSUE: reference to a compiler-generated field
-          cDisplayClass820.grid.put_RenderTransform((Transform) new TranslateTransform());
-          break;
-        case DialogService.AnimationTypes.Fade:
-          // ISSUE: reference to a compiler-generated field
-          cDisplayClass820.storyboard = XamlReader.Load("<Storyboard xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">\r\n            <DoubleAnimation \r\n\t\t\t\tDuration=\"0:0:0.2\" \r\n\t\t\t\tStoryboard.TargetProperty=\"(UIElement.Opacity)\" \r\n                To=\"1\"/>\r\n        </Storyboard>") as Storyboard;
-          break;
-        default:
-          // ISSUE: reference to a compiler-generated field
-          cDisplayClass820.storyboard = XamlReader.Load("<Storyboard xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">\r\n            <DoubleAnimation \r\n\t\t\t\tTo=\".5\"\r\n                Storyboard.TargetProperty=\"(UIElement.Projection).(PlaneProjection.CenterOfRotationY)\" />\r\n            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty=\"(UIElement.Projection).(PlaneProjection.RotationX)\">\r\n                <EasingDoubleKeyFrame KeyTime=\"0\" Value=\"-30\"/>\r\n                <EasingDoubleKeyFrame KeyTime=\"0:0:0.35\" Value=\"0\">\r\n                    <EasingDoubleKeyFrame.EasingFunction>\r\n                        <ExponentialEase EasingMode=\"EaseOut\" Exponent=\"6\"/>\r\n                    </EasingDoubleKeyFrame.EasingFunction>\r\n                </EasingDoubleKeyFrame>\r\n            </DoubleAnimationUsingKeyFrames>\r\n            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty=\"(UIElement.Opacity)\">\r\n                <DiscreteDoubleKeyFrame KeyTime=\"0\" Value=\"1\" />\r\n            </DoubleAnimationUsingKeyFrames>\r\n        </Storyboard>") as Storyboard;
-          // ISSUE: reference to a compiler-generated field
-          cDisplayClass820.grid.put_Projection((Projection) new PlaneProjection());
-          break;
-      }
-      // ISSUE: reference to a compiler-generated field
-      if (cDisplayClass820.storyboard == null)
-        return;
-      // ISSUE: reference to a compiler-generated field
-      foreach (Timeline child in (IEnumerable<Timeline>) cDisplayClass820.storyboard.Children)
-      {
-        if (child is DoubleAnimationUsingKeyFrames)
-        {
-          foreach (DoubleKeyFrame keyFrame in (IEnumerable<DoubleKeyFrame>) (child as DoubleAnimationUsingKeyFrames).KeyFrames)
-            keyFrame.put_KeyTime(KeyTime.FromTimeSpan(keyFrame.KeyTime.TimeSpan.Add(delay)));
-        }
-      }
-      // ISSUE: method pointer
-      await CoreWindow.GetForCurrentThread().Dispatcher.RunAsync((CoreDispatcherPriority) 0, new DispatchedHandler((object) cDisplayClass820, __methodptr(\u003CRunShowStoryboard\u003Eb__0)));
-    }
-
-    private void OnNavigated(object sender, NavigationEventArgs e) => this.Hide();
-
-    public void Hide()
-    {
-      if (!this.IsOpen)
-        return;
-      if (this.Page != null)
-      {
-        WindowsRuntimeMarshal.RemoveEventHandler<EventHandler<BackPressedEventArgs>>(new Action<EventRegistrationToken>(HardwareButtons.remove_BackPressed), new EventHandler<BackPressedEventArgs>(this.OnBackKeyPress));
-        WindowsRuntimeMarshal.RemoveEventHandler<NavigatedEventHandler>(new Action<EventRegistrationToken>(this.RootFrame.remove_Navigated), new NavigatedEventHandler(this.OnNavigated));
-        this._page = (Page) null;
-      }
-      this.RunHideStoryboard(this._overlay, DialogService.AnimationTypes.Fade);
-      this.RunHideStoryboard(this._childPanel, this.AnimationType);
-    }
-
-    private void RunHideStoryboard(Grid grid, DialogService.AnimationTypes animation)
     {
       if (grid == null)
         return;
-      Storyboard storyboard1;
-      switch (animation)
+        
+      await CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
       {
-        case DialogService.AnimationTypes.Slide:
-          storyboard1 = XamlReader.Load("\r\n        <Storyboard  xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">\r\n            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty=\"(UIElement.RenderTransform).(TranslateTransform.Y)\">\r\n                <EasingDoubleKeyFrame KeyTime=\"0\" Value=\"0\"/>\r\n                <EasingDoubleKeyFrame KeyTime=\"0:0:0.25\" Value=\"150\">\r\n                    <EasingDoubleKeyFrame.EasingFunction>\r\n                        <ExponentialEase EasingMode=\"EaseIn\" Exponent=\"6\"/>\r\n                    </EasingDoubleKeyFrame.EasingFunction>\r\n                </EasingDoubleKeyFrame>\r\n            </DoubleAnimationUsingKeyFrames>\r\n            <DoubleAnimation Storyboard.TargetProperty=\"(UIElement.Opacity)\" From=\"1\" To=\"0\" Duration=\"0:0:0.25\">\r\n                <DoubleAnimation.EasingFunction>\r\n                    <ExponentialEase EasingMode=\"EaseIn\" Exponent=\"6\"/>\r\n                </DoubleAnimation.EasingFunction>\r\n            </DoubleAnimation>\r\n        </Storyboard>") as Storyboard;
-          break;
-        case DialogService.AnimationTypes.SlideHorizontal:
-          storyboard1 = XamlReader.Load("\r\n        <Storyboard  xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">\r\n            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty=\"(UIElement.RenderTransform).(TranslateTransform.X)\">\r\n                <EasingDoubleKeyFrame KeyTime=\"0\" Value=\"0\"/>\r\n                <EasingDoubleKeyFrame KeyTime=\"0:0:0.25\" Value=\"150\">\r\n                    <EasingDoubleKeyFrame.EasingFunction>\r\n                        <ExponentialEase EasingMode=\"EaseIn\" Exponent=\"6\"/>\r\n                    </EasingDoubleKeyFrame.EasingFunction>\r\n                </EasingDoubleKeyFrame>\r\n            </DoubleAnimationUsingKeyFrames>\r\n            <DoubleAnimation Storyboard.TargetProperty=\"(UIElement.Opacity)\" From=\"1\" To=\"0\" Duration=\"0:0:0.25\">\r\n                <DoubleAnimation.EasingFunction>\r\n                    <ExponentialEase EasingMode=\"EaseIn\" Exponent=\"6\"/>\r\n                </DoubleAnimation.EasingFunction>\r\n            </DoubleAnimation>\r\n        </Storyboard>") as Storyboard;
-          break;
-        case DialogService.AnimationTypes.Fade:
-          storyboard1 = XamlReader.Load("<Storyboard xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">\r\n            <DoubleAnimation \r\n\t\t\t\tDuration=\"0:0:0.2\"\r\n\t\t\t\tStoryboard.TargetProperty=\"(UIElement.Opacity)\" \r\n                To=\"0\"/>\r\n        </Storyboard>") as Storyboard;
-          break;
-        default:
-          storyboard1 = XamlReader.Load("<Storyboard xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">\r\n            <DoubleAnimation BeginTime=\"0:0:0\" Duration=\"0\" \r\n                                Storyboard.TargetProperty=\"(UIElement.Projection).(PlaneProjection.CenterOfRotationY)\" \r\n                                To=\".5\"/>\r\n            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty=\"(UIElement.Projection).(PlaneProjection.RotationX)\">\r\n                <EasingDoubleKeyFrame KeyTime=\"0\" Value=\"0\"/>\r\n                <EasingDoubleKeyFrame KeyTime=\"0:0:0.25\" Value=\"45\">\r\n                    <EasingDoubleKeyFrame.EasingFunction>\r\n                        <ExponentialEase EasingMode=\"EaseIn\" Exponent=\"6\"/>\r\n                    </EasingDoubleKeyFrame.EasingFunction>\r\n                </EasingDoubleKeyFrame>\r\n            </DoubleAnimationUsingKeyFrames>\r\n            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty=\"(UIElement.Opacity)\">\r\n                <DiscreteDoubleKeyFrame KeyTime=\"0\" Value=\"1\" />\r\n                <DiscreteDoubleKeyFrame KeyTime=\"0:0:0.267\" Value=\"0\" />\r\n            </DoubleAnimationUsingKeyFrames>\r\n        </Storyboard>") as Storyboard;
-          break;
-      }
-      try
+        // Simple fade-in animation for UWP
+        var storyboard = new Storyboard();
+        var fadeAnimation = new DoubleAnimation
+        {
+          From = 0,
+          To = 1,
+          Duration = new Duration(TimeSpan.FromMilliseconds(300))
+        };
+        
+        Storyboard.SetTarget(fadeAnimation, grid);
+        Storyboard.SetTargetProperty(fadeAnimation, "Opacity");
+        storyboard.Children.Add(fadeAnimation);
+        storyboard.Begin();
+      });
+    }
+
+    private void OnNavigated(object sender, NavigationEventArgs e) => Hide();
+
+    public void Hide()
+    {
+      if (!IsOpen)
+        return;
+      if (Page != null)
       {
-        if (storyboard1 == null)
-          return;
-        Storyboard storyboard2 = storyboard1;
-        WindowsRuntimeMarshal.AddEventHandler<EventHandler<object>>(new Func<EventHandler<object>, EventRegistrationToken>(((Timeline) storyboard2).add_Completed), new Action<EventRegistrationToken>(((Timeline) storyboard2).remove_Completed), new EventHandler<object>(this.HideStoryboardCompleted));
-        foreach (Timeline child in (IEnumerable<Timeline>) storyboard1.Children)
-          Storyboard.SetTarget(child, (DependencyObject) grid);
-        storyboard1.Begin();
+        // Remove UWP navigation event handler
+        RootFrame.Navigated -= OnNavigated;
+        _page = null;
       }
-      catch (Exception ex)
+      RunHideStoryboard(_overlay, AnimationTypes.Fade);
+      RunHideStoryboard(_childPanel, AnimationType);
+    }
+
+    private void RunHideStoryboard(Grid grid, AnimationTypes animation)
+    {
+      if (grid == null)
+        return;
+        
+      // Simple fade-out animation for UWP
+      var storyboard = new Storyboard();
+      var fadeAnimation = new DoubleAnimation
       {
-        this.HideStoryboardCompleted((object) null, (object) null);
-      }
+        From = 1,
+        To = 0,
+        Duration = new Duration(TimeSpan.FromMilliseconds(200))
+      };
+      
+      Storyboard.SetTarget(fadeAnimation, grid);
+      Storyboard.SetTargetProperty(fadeAnimation, "Opacity");
+      storyboard.Children.Add(fadeAnimation);
+      storyboard.Completed += HideStoryboardCompleted;
+      storyboard.Begin();
     }
 
     private void HideStoryboardCompleted(object sender, object e)
     {
-      this.IsOpen = false;
+      IsOpen = false;
       try
       {
-        if (this.PopupContainer != null && this.PopupContainer.Children != null)
+        if (PopupContainer != null && PopupContainer.Children != null)
         {
-          if (this._overlay != null)
-            ((ICollection<UIElement>) this.PopupContainer.Children).Remove((UIElement) this._overlay);
-          ((ICollection<UIElement>) this.PopupContainer.Children).Remove((UIElement) this._childPanel);
+          if (_overlay != null)
+            PopupContainer.Children.Remove(_overlay);
+          PopupContainer.Children.Remove(_childPanel);
         }
-        ((ICollection<UIElement>) ((Panel) this._childPanel).Children).Clear();
+        _childPanel?.Children.Clear();
       }
       catch
       {
       }
       try
       {
-        if (this.Closed == null)
-          return;
-        this.Closed((object) this, (EventArgs) null);
+        Closed?.Invoke(this, EventArgs.Empty);
       }
       catch
       {
       }
     }
 
-    public void OnBackKeyPress(object sender, BackPressedEventArgs e)
+    // UWP back navigation handling - this would need to be connected to SystemNavigationManager
+    // if back button handling is required in UWP
+    public void OnBackKeyPress()
     {
-      if (this.HasPopup)
+      if (HasPopup)
       {
-        e.put_Handled(true);
+        // Handle popup back navigation
       }
       else
       {
-        if (!this.IsOpen)
+        if (!IsOpen)
           return;
-        e.put_Handled(true);
-        this.BackButtonPressed = true;
-        this.Hide();
+        BackButtonPressed = true;
+        Hide();
       }
     }
 

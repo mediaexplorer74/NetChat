@@ -20,7 +20,7 @@ namespace Coding4Fun.Toolkit.Controls
   {
     public static readonly DependencyProperty LabelProperty = DependencyProperty.Register(nameof (Label), typeof (object), typeof (ToggleButtonBase), new PropertyMetadata((object) string.Empty));
     public static readonly DependencyProperty CheckedBrushProperty = DependencyProperty.Register(nameof (CheckedBrush), typeof (Brush), typeof (ToggleButtonBase), new PropertyMetadata((object) null));
-    public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(nameof (Orientation), typeof (Orientation), typeof (ToggleButtonBase), new PropertyMetadata((object) (Orientation) 0));
+    public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(nameof (Orientation), typeof (Orientation), typeof (ToggleButtonBase), new PropertyMetadata((object) Orientation.Horizontal));
     public static readonly DependencyProperty ButtonWidthProperty = DependencyProperty.Register(nameof (ButtonWidth), typeof (double), typeof (ToggleButtonBase), new PropertyMetadata((object) double.NaN));
     public static readonly DependencyProperty ButtonHeightProperty = DependencyProperty.Register(nameof (ButtonHeight), typeof (double), typeof (ToggleButtonBase), new PropertyMetadata((object) double.NaN));
 
@@ -32,7 +32,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     protected ToggleButtonBase()
     {
-      WindowsRuntimeMarshal.AddEventHandler<DependencyPropertyChangedEventHandler>(new Func<DependencyPropertyChangedEventHandler, EventRegistrationToken>(((Control) this).add_IsEnabledChanged), new Action<EventRegistrationToken>(((Control) this).remove_IsEnabledChanged), new DependencyPropertyChangedEventHandler(this.IsEnabledStateChanged));
+      this.IsEnabledChanged += IsEnabledStateChanged;
     }
 
     private void IsEnabledStateChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -42,64 +42,58 @@ namespace Coding4Fun.Toolkit.Controls
 
     private void IsEnabledStateChanged()
     {
-      // ISSUE: object of a compiler-generated type is created
-      // ISSUE: variable of a compiler-generated type
-      ToggleButtonBase.\u003C\u003Ec__DisplayClass4_0 cDisplayClass40 = new ToggleButtonBase.\u003C\u003Ec__DisplayClass4_0();
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass40.contentBody = ((Control) this).GetTemplateChild("ContentBody") as ContentControl;
-      Grid templateChild1 = ((Control) this).GetTemplateChild("EnabledHolder") as Grid;
-      Grid templateChild2 = ((Control) this).GetTemplateChild("DisabledHolder") as Grid;
-      // ISSUE: reference to a compiler-generated field
-      if (cDisplayClass40.contentBody != null && templateChild2 != null && templateChild1 != null)
+      var contentBody = this.GetTemplateChild("ContentBody") as ContentControl;
+      Grid templateChild1 = this.GetTemplateChild("EnabledHolder") as Grid;
+      Grid templateChild2 = this.GetTemplateChild("DisabledHolder") as Grid;
+      
+      if (contentBody != null && templateChild2 != null && templateChild1 != null)
       {
-        if (!((Control) this).IsEnabled)
+        if (!this.IsEnabled)
         {
-          // ISSUE: reference to a compiler-generated field
-          ((ICollection<UIElement>) ((Panel) templateChild1).Children).Remove((UIElement) cDisplayClass40.contentBody);
+          templateChild1.Children.Remove(contentBody);
         }
         else
         {
-          // ISSUE: reference to a compiler-generated field
-          ((ICollection<UIElement>) ((Panel) templateChild2).Children).Remove((UIElement) cDisplayClass40.contentBody);
+          templateChild2.Children.Remove(contentBody);
         }
-        if (((Control) this).IsEnabled)
+        
+        if (this.IsEnabled)
         {
-          // ISSUE: reference to a compiler-generated field
-          if (!((ICollection<UIElement>) ((Panel) templateChild1).Children).Contains((UIElement) cDisplayClass40.contentBody))
+          if (!templateChild1.Children.Contains(contentBody))
           {
-            // ISSUE: reference to a compiler-generated field
-            ((IList<UIElement>) ((Panel) templateChild1).Children).Insert(0, (UIElement) cDisplayClass40.contentBody);
+            templateChild1.Children.Insert(0, contentBody);
           }
         }
         else
         {
-          // ISSUE: reference to a compiler-generated field
-          if (!((ICollection<UIElement>) ((Panel) templateChild2).Children).Contains((UIElement) cDisplayClass40.contentBody))
+          if (!templateChild2.Children.Contains(contentBody))
           {
-            // ISSUE: reference to a compiler-generated field
-            ((IList<UIElement>) ((Panel) templateChild2).Children).Insert(0, (UIElement) cDisplayClass40.contentBody);
+            templateChild2.Children.Insert(0, contentBody);
           }
         }
       }
-      ((UIElement) this).UpdateLayout();
+      
+      this.UpdateLayout();
+      
       if (ApplicationSpace.IsDesignMode)
       {
-        // ISSUE: reference to a compiler-generated field
-        ButtonBaseHelper.ApplyForegroundToFillBinding(cDisplayClass40.contentBody);
+        ButtonBaseHelper.ApplyForegroundToFillBinding(contentBody);
       }
       else
       {
-        // ISSUE: method pointer
-        ((DependencyObject) this).Dispatcher.RunAsync((CoreDispatcherPriority) 0, new DispatchedHandler((object) cDisplayClass40, __methodptr(\u003CIsEnabledStateChanged\u003Eb__0))).AsTask();
+        this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+        {
+          ButtonBaseHelper.ApplyForegroundToFillBinding(contentBody);
+        });
       }
     }
 
-    protected virtual void OnContentChanged(object oldContent, object newContent)
+    protected override void OnContentChanged(object oldContent, object newContent)
     {
-      ((ContentControl) this).OnContentChanged(oldContent, newContent);
+      base.OnContentChanged(oldContent, newContent);
       if (oldContent == newContent)
         return;
-      this.AppendCheck(((ContentControl) this).Content);
+      this.AppendCheck(this.Content);
       this.IsEnabledStateChanged();
     }
 
@@ -107,57 +101,57 @@ namespace Coding4Fun.Toolkit.Controls
     {
       if (!this.IsContentEmpty(content))
         return;
-      ((ContentControl) this).put_Content((object) ButtonBaseHelper.CreateXamlCheck((FrameworkElement) this));
+      ((ContentControl)this).Content = ButtonBaseHelper.CreateXamlCheck((FrameworkElement) this);
     }
 
-    protected virtual void OnApplyTemplate()
+    protected override void OnApplyTemplate()
     {
-      ((FrameworkElement) this).OnApplyTemplate();
+      base.OnApplyTemplate();
       this.ApplyingTemplate();
-      this.AppendCheck(((ContentControl) this).Content);
+      this.AppendCheck(this.Content);
       this.IsEnabledStateChanged();
-      ButtonBaseHelper.ApplyTitleOffset(((Control) this).GetTemplateChild("ContentTitle") as ContentControl);
+      ButtonBaseHelper.ApplyTitleOffset(this.GetTemplateChild("ContentTitle") as ContentControl);
     }
 
     public object Label
     {
-      get => ((DependencyObject) this).GetValue(ToggleButtonBase.LabelProperty);
-      set => ((DependencyObject) this).SetValue(ToggleButtonBase.LabelProperty, value);
+      get => this.GetValue(ToggleButtonBase.LabelProperty);
+      set => this.SetValue(ToggleButtonBase.LabelProperty, value);
     }
 
     public Brush CheckedBrush
     {
-      get => (Brush) ((DependencyObject) this).GetValue(ToggleButtonBase.CheckedBrushProperty);
+      get => (Brush) this.GetValue(ToggleButtonBase.CheckedBrushProperty);
       set
       {
-        ((DependencyObject) this).SetValue(ToggleButtonBase.CheckedBrushProperty, (object) value);
+        this.SetValue(ToggleButtonBase.CheckedBrushProperty, value);
       }
     }
 
     public Orientation Orientation
     {
-      get => (Orientation) ((DependencyObject) this).GetValue(ToggleButtonBase.OrientationProperty);
+      get => (Orientation) this.GetValue(ToggleButtonBase.OrientationProperty);
       set
       {
-        ((DependencyObject) this).SetValue(ToggleButtonBase.OrientationProperty, (object) value);
+        this.SetValue(ToggleButtonBase.OrientationProperty, value);
       }
     }
 
     public double ButtonWidth
     {
-      get => (double) ((DependencyObject) this).GetValue(ToggleButtonBase.ButtonWidthProperty);
+      get => (double) this.GetValue(ToggleButtonBase.ButtonWidthProperty);
       set
       {
-        ((DependencyObject) this).SetValue(ToggleButtonBase.ButtonWidthProperty, (object) value);
+        this.SetValue(ToggleButtonBase.ButtonWidthProperty, value);
       }
     }
 
     public double ButtonHeight
     {
-      get => (double) ((DependencyObject) this).GetValue(ToggleButtonBase.ButtonHeightProperty);
+      get => (double) this.GetValue(ToggleButtonBase.ButtonHeightProperty);
       set
       {
-        ((DependencyObject) this).SetValue(ToggleButtonBase.ButtonHeightProperty, (object) value);
+        this.SetValue(ToggleButtonBase.ButtonHeightProperty, value);
       }
     }
   }

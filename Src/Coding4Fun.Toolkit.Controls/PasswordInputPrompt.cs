@@ -24,7 +24,7 @@ namespace Coding4Fun.Toolkit.Controls
     private DateTime _lastUpdated = DateTime.Now;
     public static readonly DependencyProperty PasswordCharProperty = DependencyProperty.Register(nameof (PasswordChar), typeof (char), typeof (PasswordInputPrompt), new PropertyMetadata((object) '●'));
 
-    public PasswordInputPrompt() => this.put_DefaultStyleKey((object) typeof (PasswordInputPrompt));
+    public PasswordInputPrompt() => this.DefaultStyleKey = typeof (PasswordInputPrompt);
 
     protected override void OnApplyTemplate()
     {
@@ -32,23 +32,22 @@ namespace Coding4Fun.Toolkit.Controls
       if (this.InputBox == null)
         return;
       Windows.UI.Xaml.Data.Binding binding = new Windows.UI.Xaml.Data.Binding();
-      binding.put_Source((object) this.InputBox);
-      binding.put_Path(new PropertyPath("Text"));
+      binding.Source = this.InputBox;
+      binding.Path = new PropertyPath("Text");
       ((FrameworkElement) this).SetBinding(UserPrompt.ValueProperty, (BindingBase) binding);
       TextBinding.SetUpdateSourceOnChange((DependencyObject) this.InputBox, true);
-      WindowsRuntimeMarshal.RemoveEventHandler<TextChangedEventHandler>(new Action<EventRegistrationToken>(this.InputBox.remove_TextChanged), new TextChangedEventHandler(this.InputBoxTextChanged));
-      WindowsRuntimeMarshal.RemoveEventHandler<RoutedEventHandler>(new Action<EventRegistrationToken>(this.InputBox.remove_SelectionChanged), new RoutedEventHandler(this.InputBoxSelectionChanged));
-      TextBox inputBox1 = this.InputBox;
-      WindowsRuntimeMarshal.AddEventHandler<TextChangedEventHandler>(new Func<TextChangedEventHandler, EventRegistrationToken>(inputBox1.add_TextChanged), new Action<EventRegistrationToken>(inputBox1.remove_TextChanged), new TextChangedEventHandler(this.InputBoxTextChanged));
-      TextBox inputBox2 = this.InputBox;
-      WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(inputBox2.add_SelectionChanged), new Action<EventRegistrationToken>(inputBox2.remove_SelectionChanged), new RoutedEventHandler(this.InputBoxSelectionChanged));
+      this.InputBox.TextChanged -= InputBoxTextChanged;
+      this.InputBox.SelectionChanged -= InputBoxSelectionChanged;
+      
+      this.InputBox.TextChanged += InputBoxTextChanged;
+      this.InputBox.SelectionChanged += InputBoxSelectionChanged;
     }
 
     private void InputBoxSelectionChanged(object sender, RoutedEventArgs e)
     {
       if (this.InputBox.SelectionLength <= 0)
         return;
-      this.InputBox.put_SelectionLength(0);
+      this.InputBox.SelectionLength = 0;
     }
 
     private async void InputBoxTextChanged(object sender, TextChangedEventArgs e)
@@ -76,7 +75,7 @@ namespace Coding4Fun.Toolkit.Controls
         {
           StringBuilder stringBuilder = new StringBuilder();
           stringBuilder.Insert(0, this.PasswordChar.ToString(), this.InputBox.Text.Length);
-          this.InputBox.put_Text(stringBuilder.ToString());
+          this.InputBox.Text = stringBuilder.ToString();
         }
         else
         {
@@ -85,25 +84,33 @@ namespace Coding4Fun.Toolkit.Controls
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Insert(0, this.PasswordChar.ToString(), this.InputBox.Text.Length - length1);
             stringBuilder.Insert(num, str);
-            this.InputBox.put_Text(stringBuilder.ToString());
+            this.InputBox.Text = stringBuilder.ToString();
           }
           await this.ExecuteDelayedOverwrite();
           this._lastUpdated = DateTime.Now;
         }
-        this.InputBox.put_SelectionStart(selectionStart);
+        this.InputBox.SelectionStart = selectionStart;
       }
     }
 
     private async Task ExecuteDelayedOverwrite()
     {
-      await Task.Run((Func<Task>) (async () =>
+      await Task.Run(async () =>
       {
         await Task.Delay(TimeSpan.FromMilliseconds(500.0));
         if (DateTime.Now - this._lastUpdated < TimeSpan.FromMilliseconds(500.0))
           return;
-        // ISSUE: method pointer
-        await ApplicationSpace.CurrentDispatcher.RunAsync((CoreDispatcherPriority) 0, new DispatchedHandler((object) this, __methodptr(\u003CExecuteDelayedOverwrite\u003Eb__6_1)));
-      }));
+          
+        await ApplicationSpace.CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+        {
+          if (InputBox != null)
+          {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Insert(0, PasswordChar.ToString(), InputBox.Text.Length);
+            InputBox.Text = stringBuilder.ToString();
+          }
+        });
+      });
     }
 
     public char PasswordChar

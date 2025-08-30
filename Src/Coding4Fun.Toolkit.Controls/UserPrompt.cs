@@ -27,9 +27,8 @@ namespace Coding4Fun.Toolkit.Controls
       RoundButton roundButton1 = new RoundButton();
       this._cancelButton = new RoundButton();
       RoundButton roundButton2 = roundButton1;
-      WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(((ButtonBase) roundButton2).add_Click), new Action<EventRegistrationToken>(((ButtonBase) roundButton2).remove_Click), new RoutedEventHandler(this.OkClick));
-      RoundButton cancelButton = this._cancelButton;
-      WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(((ButtonBase) cancelButton).add_Click), new Action<EventRegistrationToken>(((ButtonBase) cancelButton).remove_Click), new RoutedEventHandler(this.CancelledClick));
+      ((ButtonBase)roundButton2).Click += this.OkClick;
+      ((ButtonBase)this._cancelButton).Click += this.CancelledClick;
       this.ActionPopUpButtons.Add((Button) roundButton1);
       this.ActionPopUpButtons.Add((Button) this._cancelButton);
       this.SetCancelButtonVisibility(this.IsCancelVisible);
@@ -37,7 +36,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     protected override void OnApplyTemplate()
     {
-      ((ContentControl) this._cancelButton).put_Content((object) ButtonBaseHelper.CreateXamlCancel((FrameworkElement) this._cancelButton));
+      ((ContentControl)this._cancelButton).Content = ButtonBaseHelper.CreateXamlCancel(this._cancelButton);
       base.OnApplyTemplate();
     }
 
@@ -60,7 +59,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     private void SetCancelButtonVisibility(bool value)
     {
-      ((UIElement) this._cancelButton).put_Visibility(value ? (Visibility) 0 : (Visibility) 1);
+      ((UIElement)this._cancelButton).Visibility = value ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private static void OnMesageContentChanged(

@@ -11,6 +11,6 @@ namespace Coding4Fun.Toolkit.Controls
 {
   public class ColorSliderThumb : Control
   {
-    public ColorSliderThumb() => this.put_DefaultStyleKey((object) typeof (ColorSliderThumb));
+    public ColorSliderThumb() => this.DefaultStyleKey = typeof (ColorSliderThumb);
   }
 }

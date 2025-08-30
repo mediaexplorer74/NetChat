@@ -40,10 +40,8 @@ namespace Coding4Fun.Toolkit.Controls
 
     private void SetRectangleEvents(UIElement rect)
     {
-      UIElement uiElement1 = rect;
-      WindowsRuntimeMarshal.AddEventHandler<TappedEventHandler>(new Func<TappedEventHandler, EventRegistrationToken>(uiElement1.add_Tapped), new Action<EventRegistrationToken>(uiElement1.remove_Tapped), new TappedEventHandler(this.ExecuteRectangleSelect));
-      UIElement uiElement2 = rect;
-      WindowsRuntimeMarshal.AddEventHandler<PointerEventHandler>(new Func<PointerEventHandler, EventRegistrationToken>(uiElement2.add_PointerMoved), new Action<EventRegistrationToken>(uiElement2.remove_PointerMoved), new PointerEventHandler(this.ExecuteRectangleHighlight));
+      rect.Tapped += this.ExecuteRectangleSelect;
+      rect.PointerMoved += this.ExecuteRectangleHighlight;
     }
 
     private void ExecuteRectangleSelect(object sender, TappedRoutedEventArgs e)
@@ -58,8 +56,8 @@ namespace Coding4Fun.Toolkit.Controls
 
     public ColorHexagonPicker()
     {
-      this.put_DefaultStyleKey((object) typeof (ColorHexagonPicker));
-      WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(((FrameworkElement) this).add_Loaded), new Action<EventRegistrationToken>(((FrameworkElement) this).remove_Loaded), new RoutedEventHandler(this.ColorHexagonPickerLoaded));
+      this.DefaultStyleKey = typeof (ColorHexagonPicker);
+      this.Loaded += this.ColorHexagonPickerLoaded;
     }
 
     private void ColorHexagonPickerLoaded()
@@ -105,7 +103,7 @@ namespace Coding4Fun.Toolkit.Controls
       if (this.GreyScaleSteps <= 0)
         return;
       StackPanel stackPanel1 = new StackPanel();
-      ((FrameworkElement) stackPanel1).put_Margin(new Thickness(0.0, this.ColorSize, 0.0, 0.0));
+      stackPanel1.Margin = new Thickness(0.0, this.ColorSize, 0.0, 0.0);
       StackPanel horizontalStackPanel1 = ColorHexagonPicker.CreateHorizontalStackPanel();
       StackPanel horizontalStackPanel2 = ColorHexagonPicker.CreateHorizontalStackPanel();
       int num1 = this.GreyScaleSteps + 2;
@@ -143,8 +141,8 @@ namespace Coding4Fun.Toolkit.Controls
     private static StackPanel CreateHorizontalStackPanel()
     {
       StackPanel horizontalStackPanel = new StackPanel();
-      ((FrameworkElement) horizontalStackPanel).put_HorizontalAlignment((HorizontalAlignment) 1);
-      horizontalStackPanel.put_Orientation((Orientation) 1);
+      horizontalStackPanel.HorizontalAlignment = HorizontalAlignment.Center;
+      horizontalStackPanel.Orientation = Orientation.Horizontal;
       return horizontalStackPanel;
     }
 
@@ -180,11 +178,11 @@ namespace Coding4Fun.Toolkit.Controls
     private Rectangle CreateRectangle(Color color)
     {
       Rectangle rectangle = new Rectangle();
-      ((FrameworkElement) rectangle).put_Width(this.ColorSize);
-      ((FrameworkElement) rectangle).put_Height(this.ColorSize);
-      ((Shape) rectangle).put_StrokeThickness(3.0);
-      ((Shape) rectangle).put_Stroke((Brush) new SolidColorBrush(color));
-      ((Shape) rectangle).put_Fill((Brush) new SolidColorBrush(color));
+      rectangle.Width = this.ColorSize;
+      rectangle.Height = this.ColorSize;
+      rectangle.StrokeThickness = 3.0;
+      rectangle.Stroke = new SolidColorBrush(color);
+      rectangle.Fill = new SolidColorBrush(color);
       Rectangle rect = rectangle;
       this.SetRectangleEvents((UIElement) rect);
       if (this.Color == color)
@@ -213,12 +211,12 @@ namespace Coding4Fun.Toolkit.Controls
     {
       if (rect == null)
         return;
-      ((Shape) rect).put_Stroke((Brush) new SolidColorBrush(this.SelectedStrokeColor));
+      rect.Stroke = new SolidColorBrush(this.SelectedStrokeColor);
       if (this._focusedRectangle != null && this._focusedRectangle != rect)
-        ((Shape) this._focusedRectangle).put_Stroke(((Shape) this._focusedRectangle).Fill);
+        this._focusedRectangle.Stroke = this._focusedRectangle.Fill;
       this._focusedRectangle = rect;
       this._raisedFromRectangleFocusMethod = true;
-      this.ColorChanging(((SolidColorBrush) ((Shape) rect).Fill).Color);
+      this.ColorChanging(((SolidColorBrush) rect.Fill).Color);
       this._raisedFromRectangleFocusMethod = false;
     }
 

@@ -34,9 +34,9 @@ namespace Coding4Fun.Toolkit.Controls.Common
       int speed = 500)
     {
       DoubleAnimation doubleAnimation1 = new DoubleAnimation();
-      doubleAnimation1.put_To(new double?(toValue));
-      doubleAnimation1.put_From(new double?(fromValue));
-      ((Timeline) doubleAnimation1).put_Duration(new Duration(TimeSpan.FromMilliseconds((double) speed)));
+      doubleAnimation1.To = toValue;
+      doubleAnimation1.From = fromValue;
+      doubleAnimation1.Duration = TimeSpan.FromMilliseconds((double) speed);
       DoubleAnimation doubleAnimation2 = doubleAnimation1;
       Storyboard.SetTarget((Timeline) doubleAnimation2, target);
       Storyboard.SetTargetProperty((Timeline) doubleAnimation2, propertyPath);

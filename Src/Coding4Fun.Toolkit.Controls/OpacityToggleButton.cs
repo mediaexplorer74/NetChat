@@ -19,7 +19,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     public OpacityToggleButton()
     {
-      ((Control) this).put_DefaultStyleKey((object) typeof (OpacityToggleButton));
+      this.DefaultStyleKey = typeof (OpacityToggleButton);
     }
 
     public Duration AnimationDuration

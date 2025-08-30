@@ -46,9 +46,9 @@ namespace Coding4Fun.Toolkit.Controls
 
     public ImageTile()
     {
-      ((Control) this).put_DefaultStyleKey((object) typeof (ImageTile));
-      WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(((FrameworkElement) this).add_Loaded), new Action<EventRegistrationToken>(((FrameworkElement) this).remove_Loaded), new RoutedEventHandler(this.ImageTileLoaded));
-      WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(((FrameworkElement) this).add_Unloaded), new Action<EventRegistrationToken>(((FrameworkElement) this).remove_Unloaded), new RoutedEventHandler(this.ImageTileUnloaded));
+      this.DefaultStyleKey = typeof (ImageTile);
+      this.Loaded += new RoutedEventHandler(this.ImageTileLoaded);
+      this.Unloaded += new RoutedEventHandler(this.ImageTileUnloaded);
     }
 
     private void ImageTileUnloaded(object sender, RoutedEventArgs e) => this.Dispose();
@@ -61,17 +61,17 @@ namespace Coding4Fun.Toolkit.Controls
       if (this._changeImageTimer != null)
       {
         this._changeImageTimer.Stop();
-        WindowsRuntimeMarshal.RemoveEventHandler<EventHandler<object>>(new Action<EventRegistrationToken>(this._changeImageTimer.remove_Tick), new EventHandler<object>(this.ChangeImageTimerTick));
-        this._changeImageTimer = (DispatcherTimer) null;
+        this._changeImageTimer.Tick -= new EventHandler<object>(this.ChangeImageTimerTick);
+        this._changeImageTimer = null;
       }
       if (this._imageContainer != null)
-        ((ICollection<UIElement>) ((Panel) this._imageContainer).Children).Clear();
+        this._imageContainer.Children.Clear();
       foreach (ImageTileState imageTileState in this._animationTracking)
         imageTileState.Storyboard.Stop();
       Frame rootFrame = ApplicationSpace.RootFrame;
       if (rootFrame == null)
         return;
-      WindowsRuntimeMarshal.RemoveEventHandler<NavigatedEventHandler>(new Action<EventRegistrationToken>(rootFrame.remove_Navigated), new NavigatedEventHandler(this.FrameNavigated));
+      rootFrame.Navigated -= new NavigatedEventHandler(this.FrameNavigated);
     }
 
     private void ImageTileLoaded(object sender, RoutedEventArgs e)
@@ -82,16 +82,15 @@ namespace Coding4Fun.Toolkit.Controls
       Frame rootFrame = ApplicationSpace.RootFrame;
       if (rootFrame == null)
         return;
-      WindowsRuntimeMarshal.RemoveEventHandler<NavigatedEventHandler>(new Action<EventRegistrationToken>(rootFrame.remove_Navigated), new NavigatedEventHandler(this.FrameNavigated));
-      Frame frame = rootFrame;
-      WindowsRuntimeMarshal.AddEventHandler<NavigatedEventHandler>(new Func<NavigatedEventHandler, EventRegistrationToken>(frame.add_Navigated), new Action<EventRegistrationToken>(frame.remove_Navigated), new NavigatedEventHandler(this.FrameNavigated));
+      rootFrame.Navigated -= new NavigatedEventHandler(this.FrameNavigated);
+      rootFrame.Navigated += new NavigatedEventHandler(this.FrameNavigated);
       this.FinishLoadAndTemplateApply();
     }
 
     protected override void OnApplyTemplate()
     {
       base.OnApplyTemplate();
-      this._imageContainer = (Grid) ((Control) this).GetTemplateChild("ImageContainer");
+      this._imageContainer = this.GetTemplateChild("ImageContainer") as Grid;
       this.FinishLoadAndTemplateApply();
     }
 
@@ -101,9 +100,8 @@ namespace Coding4Fun.Toolkit.Controls
         return;
       if (this._changeImageTimer == null)
         this._changeImageTimer = new DispatcherTimer();
-      WindowsRuntimeMarshal.RemoveEventHandler<EventHandler<object>>(new Action<EventRegistrationToken>(this._changeImageTimer.remove_Tick), new EventHandler<object>(this.ChangeImageTimerTick));
-      DispatcherTimer changeImageTimer = this._changeImageTimer;
-      WindowsRuntimeMarshal.AddEventHandler<EventHandler<object>>(new Func<EventHandler<object>, EventRegistrationToken>(changeImageTimer.add_Tick), new Action<EventRegistrationToken>(changeImageTimer.remove_Tick), new EventHandler<object>(this.ChangeImageTimerTick));
+      this._changeImageTimer.Tick -= new EventHandler<object>(this.ChangeImageTimerTick);
+      this._changeImageTimer.Tick += new EventHandler<object>(this.ChangeImageTimerTick);
       this.GridSizeChanged();
       this.ResetGridStateManagement();
       this._createAnimation = false;
@@ -141,8 +139,8 @@ namespace Coding4Fun.Toolkit.Controls
         bool isLargeImage;
         this.CalculateNextValidItem(out index, ref row, ref col, out isLargeImage);
         Image imageControl = this.CreateImageControl(row, col, isLargeImage);
-        ((ICollection<UIElement>) ((Panel) this._imageContainer).Children).Add((UIElement) imageControl);
-        this.SetImageSource(imageControl, index, (int) ((FrameworkElement) this).ActualWidth);
+        this._imageContainer.Children.Add(imageControl);
+        this.SetImageSource(imageControl, index, (int) this.ActualWidth);
         if (!this._createAnimation || this.AnimationType == ImageTileAnimationTypes.None)
           return;
         Storyboard sb = new Storyboard();
@@ -150,19 +148,18 @@ namespace Coding4Fun.Toolkit.Controls
         switch (this.AnimationType)
         {
           case ImageTileAnimationTypes.Fade:
-            ControlHelper.CreateDoubleAnimations(sb, (DependencyObject) imageControl, "Opacity", toValue: 1.0, speed: this.AnimationDuration);
+            ControlHelper.CreateDoubleAnimations(sb, imageControl, "Opacity", toValue: 1.0, speed: this.AnimationDuration);
             break;
           case ImageTileAnimationTypes.HorizontalExpand:
-            ((UIElement) imageControl).put_Projection((Projection) new PlaneProjection());
-            ControlHelper.CreateDoubleAnimations(sb, (DependencyObject) ((UIElement) imageControl).Projection, "RotationY", 270.0, 360.0, this.AnimationDuration);
+            imageControl.Projection = new PlaneProjection();
+            ControlHelper.CreateDoubleAnimations(sb, imageControl.Projection, "RotationY", 270.0, 360.0, this.AnimationDuration);
             break;
           case ImageTileAnimationTypes.VerticalExpand:
-            ((UIElement) imageControl).put_Projection((Projection) new PlaneProjection());
-            ControlHelper.CreateDoubleAnimations(sb, (DependencyObject) ((UIElement) imageControl).Projection, "RotationX", 270.0, 360.0, this.AnimationDuration);
+            imageControl.Projection = new PlaneProjection();
+            ControlHelper.CreateDoubleAnimations(sb, imageControl.Projection, "RotationX", 270.0, 360.0, this.AnimationDuration);
             break;
         }
-        Storyboard storyboard = sb;
-        WindowsRuntimeMarshal.AddEventHandler<EventHandler<object>>(new Func<EventHandler<object>, EventRegistrationToken>(((Timeline) storyboard).add_Completed), new Action<EventRegistrationToken>(((Timeline) storyboard).remove_Completed), new EventHandler<object>(this.AnimationCompleted));
+        sb.Completed += new EventHandler<object>(this.AnimationCompleted);
         sb.Begin();
       }
       catch
@@ -259,18 +256,18 @@ namespace Coding4Fun.Toolkit.Controls
     private Image CreateImageControl(int row, int col, bool isLargeImage)
     {
       Image image = new Image();
-      ((FrameworkElement) image).put_HorizontalAlignment((HorizontalAlignment) 1);
-      ((FrameworkElement) image).put_VerticalAlignment((VerticalAlignment) 1);
-      image.put_Stretch((Stretch) 3);
-      ((FrameworkElement) image).put_Name(Guid.NewGuid().ToString());
-      ((UIElement) image).put_UseLayoutRounding(false);
+      image.HorizontalAlignment = HorizontalAlignment.Center;
+      image.VerticalAlignment = VerticalAlignment.Center;
+      image.Stretch = Stretch.UniformToFill;
+      image.Name = Guid.NewGuid().ToString();
+      image.UseLayoutRounding = false;
       Image imageControl = image;
-      ((DependencyObject) imageControl).SetValue(Grid.ColumnProperty, (object) col);
-      ((DependencyObject) imageControl).SetValue(Grid.RowProperty, (object) row);
+      imageControl.SetValue(Grid.ColumnProperty, col);
+      imageControl.SetValue(Grid.RowProperty, row);
       if (isLargeImage)
       {
-        ((DependencyObject) imageControl).SetValue(Grid.ColumnSpanProperty, (object) this.LargeTileColumns);
-        ((DependencyObject) imageControl).SetValue(Grid.RowSpanProperty, (object) this.LargeTileRows);
+        imageControl.SetValue(Grid.ColumnSpanProperty, this.LargeTileColumns);
+        imageControl.SetValue(Grid.RowSpanProperty, this.LargeTileRows);
       }
       return imageControl;
     }
@@ -278,17 +275,16 @@ namespace Coding4Fun.Toolkit.Controls
     private void SetImageSource(Image img, int index, int imgWidth)
     {
       Uri randomImageUri = this.GetRandomImageUri(index);
-      img.put_Source((ImageSource) this.GetImage(randomImageUri, imgWidth));
+      img.Source = this.GetImage(randomImageUri, imgWidth);
     }
 
     private BitmapImage GetImage(Uri file, int imgWidth)
     {
       BitmapImage image = new BitmapImage(file);
-      image.put_DecodePixelWidth(imgWidth);
-      BitmapImage bitmapImage1 = image;
-      WindowsRuntimeMarshal.AddEventHandler<RoutedEventHandler>(new Func<RoutedEventHandler, EventRegistrationToken>(bitmapImage1.add_ImageOpened), new Action<EventRegistrationToken>(bitmapImage1.remove_ImageOpened), new RoutedEventHandler(this.ImageOpened));
-      BitmapImage bitmapImage2 = image;
-      WindowsRuntimeMarshal.AddEventHandler<ExceptionRoutedEventHandler>(new Func<ExceptionRoutedEventHandler, EventRegistrationToken>(bitmapImage2.add_ImageFailed), new Action<EventRegistrationToken>(bitmapImage2.remove_ImageFailed), new ExceptionRoutedEventHandler(this.ImageLoadFail));
+      image.DecodePixelWidth = imgWidth;
+      BitmapImage bitmapImage = image;
+      bitmapImage.ImageOpened += this.ImageOpened;
+      bitmapImage.ImageFailed += this.ImageLoadFail;
       return image;
     }
 
@@ -306,8 +302,8 @@ namespace Coding4Fun.Toolkit.Controls
     {
       if (!(sender is BitmapImage bitmapImage))
         return;
-      WindowsRuntimeMarshal.RemoveEventHandler<RoutedEventHandler>(new Action<EventRegistrationToken>(bitmapImage.remove_ImageOpened), new RoutedEventHandler(this.ImageOpened));
-      WindowsRuntimeMarshal.RemoveEventHandler<ExceptionRoutedEventHandler>(new Action<EventRegistrationToken>(bitmapImage.remove_ImageFailed), new ExceptionRoutedEventHandler(this.ImageLoadFail));
+      bitmapImage.ImageOpened -= this.ImageOpened;
+      bitmapImage.ImageFailed -= this.ImageLoadFail;
     }
 
     private void TrackAnimationForImageRemoval(
@@ -330,7 +326,7 @@ namespace Coding4Fun.Toolkit.Controls
       Storyboard itemStoryboard = sender as Storyboard;
       if (itemStoryboard == null)
         return;
-      WindowsRuntimeMarshal.RemoveEventHandler<EventHandler<object>>(new Action<EventRegistrationToken>(((Timeline) itemStoryboard).remove_Completed), new EventHandler<object>(this.AnimationCompleted));
+      itemStoryboard.Completed -= new EventHandler<object>(this.AnimationCompleted);
       ImageTileState imageTileState = this._animationTracking.FirstOrDefault<ImageTileState>((Func<ImageTileState, bool>) (x => x.Storyboard == itemStoryboard));
       if (imageTileState.ForceLargeImageCleanup)
       {
@@ -345,16 +341,16 @@ namespace Coding4Fun.Toolkit.Controls
       }
       this.RemoveOldImagesFromGrid(imageTileState.Row, imageTileState.Column);
       this._animationTracking.Remove(imageTileState);
-      imageTileState.Storyboard = (Storyboard) null;
+      imageTileState.Storyboard = null;
     }
 
     private void RemoveOldImagesFromGrid(int row, int col, bool forceRemoval = false)
     {
-      Image[] array = ((FrameworkElement) this._imageContainer).GetLogicalChildrenByType<Image>(false).Where<Image>((Func<Image, bool>) (x => (int) ((DependencyObject) x).GetValue(Grid.RowProperty) == row && (int) ((DependencyObject) x).GetValue(Grid.ColumnProperty) == col)).ToArray<Image>();
+      Image[] array = this._imageContainer.GetLogicalChildrenByType<Image>(false).Where<Image>((Func<Image, bool>) (x => (int) x.GetValue(Grid.RowProperty) == row && (int) x.GetValue(Grid.ColumnProperty) == col)).ToArray<Image>();
       int num1 = forceRemoval ? 0 : 1;
       int num2 = ((IEnumerable<Image>) array).Count<Image>();
       for (int index = 0; index < num2 - num1; ++index)
-        ((ICollection<UIElement>) ((Panel) this._imageContainer).Children).Remove((UIElement) array[index]);
+        this._imageContainer.Children.Remove(array[index]);
     }
 
     private Uri GetRandomImageUri(int index)
@@ -396,64 +392,64 @@ namespace Coding4Fun.Toolkit.Controls
 
     public int Columns
     {
-      get => (int) ((DependencyObject) this).GetValue(ImageTile.ColumnProperty);
-      set => ((DependencyObject) this).SetValue(ImageTile.ColumnProperty, (object) value);
+      get => (int) this.GetValue(ImageTile.ColumnProperty);
+      set => this.SetValue(ImageTile.ColumnProperty, value);
     }
 
     public int Rows
     {
-      get => (int) ((DependencyObject) this).GetValue(ImageTile.RowsProperty);
-      set => ((DependencyObject) this).SetValue(ImageTile.RowsProperty, (object) value);
+      get => (int) this.GetValue(ImageTile.RowsProperty);
+      set => this.SetValue(ImageTile.RowsProperty, value);
     }
 
     public int LargeTileColumns
     {
-      get => (int) ((DependencyObject) this).GetValue(ImageTile.LargeTileColumnsProperty);
-      set => ((DependencyObject) this).SetValue(ImageTile.LargeTileColumnsProperty, (object) value);
+      get => (int) this.GetValue(ImageTile.LargeTileColumnsProperty);
+      set => this.SetValue(ImageTile.LargeTileColumnsProperty, value);
     }
 
     public int LargeTileRows
     {
-      get => (int) ((DependencyObject) this).GetValue(ImageTile.LargeTileRowsProperty);
-      set => ((DependencyObject) this).SetValue(ImageTile.LargeTileRowsProperty, (object) value);
+      get => (int) this.GetValue(ImageTile.LargeTileRowsProperty);
+      set => this.SetValue(ImageTile.LargeTileRowsProperty, value);
     }
 
     public List<Uri> ItemsSource
     {
-      get => (List<Uri>) ((DependencyObject) this).GetValue(ImageTile.ItemsSourceProperty);
-      set => ((DependencyObject) this).SetValue(ImageTile.ItemsSourceProperty, (object) value);
+      get => (List<Uri>) this.GetValue(ImageTile.ItemsSourceProperty);
+      set => this.SetValue(ImageTile.ItemsSourceProperty, value);
     }
 
     public ImageTileAnimationTypes AnimationType
     {
       get
       {
-        return (ImageTileAnimationTypes) ((DependencyObject) this).GetValue(ImageTile.AnimationTypesProperty);
+        return (ImageTileAnimationTypes) this.GetValue(ImageTile.AnimationTypesProperty);
       }
-      set => ((DependencyObject) this).SetValue(ImageTile.AnimationTypesProperty, (object) value);
+      set => this.SetValue(ImageTile.AnimationTypesProperty, value);
     }
 
     public bool IsFrozen
     {
-      get => (bool) ((DependencyObject) this).GetValue(ImageTile.IsFrozenProperty);
-      set => ((DependencyObject) this).SetValue(ImageTile.IsFrozenProperty, (object) value);
+      get => (bool) this.GetValue(ImageTile.IsFrozenProperty);
+      set => this.SetValue(ImageTile.IsFrozenProperty, value);
     }
 
     public int AnimationDuration
     {
-      get => (int) ((DependencyObject) this).GetValue(ImageTile.AnimationDurationProperty);
+      get => (int) this.GetValue(ImageTile.AnimationDurationProperty);
       set
       {
-        ((DependencyObject) this).SetValue(ImageTile.AnimationDurationProperty, (object) value);
+        this.SetValue(ImageTile.AnimationDurationProperty, value);
       }
     }
 
     public int ImageCycleInterval
     {
-      get => (int) ((DependencyObject) this).GetValue(ImageTile.ImageCycleIntervalProperty);
+      get => (int) this.GetValue(ImageTile.ImageCycleIntervalProperty);
       set
       {
-        ((DependencyObject) this).SetValue(ImageTile.ImageCycleIntervalProperty, (object) value);
+        this.SetValue(ImageTile.ImageCycleIntervalProperty, value);
       }
     }
 
@@ -487,7 +483,7 @@ namespace Coding4Fun.Toolkit.Controls
     {
       int num = this._changeImageTimer.IsEnabled ? 1 : 0;
       this._changeImageTimer.Stop();
-      this._changeImageTimer.put_Interval(TimeSpan.FromMilliseconds((double) this.ImageCycleInterval));
+      this._changeImageTimer.Interval = TimeSpan.FromMilliseconds((double) this.ImageCycleInterval);
       if (num == 0)
         return;
       this._changeImageTimer.Start();
@@ -516,26 +512,26 @@ namespace Coding4Fun.Toolkit.Controls
     {
       if (this._imageContainer == null)
         return;
-      int count1 = ((ICollection<ColumnDefinition>) this._imageContainer.ColumnDefinitions).Count;
-      int count2 = ((ICollection<RowDefinition>) this._imageContainer.RowDefinitions).Count;
+      int count1 = this._imageContainer.ColumnDefinitions.Count;
+      int count2 = this._imageContainer.RowDefinitions.Count;
       if (count1 > this.Columns)
       {
         for (int index = count1 - 1; index >= this.Columns; --index)
         {
-          ((IList<ColumnDefinition>) this._imageContainer.ColumnDefinitions).RemoveAt(index);
+          this._imageContainer.ColumnDefinitions.RemoveAt(index);
           this.KeepGridInSyncCol(index);
         }
       }
       else if (count1 < this.Columns)
       {
         for (int index = 0; index < this.Columns - count1; ++index)
-          ((ICollection<ColumnDefinition>) this._imageContainer.ColumnDefinitions).Add(new ColumnDefinition());
+          this._imageContainer.ColumnDefinitions.Add(new ColumnDefinition());
       }
       if (count2 > this.Rows)
       {
         for (int index = count2 - 1; index >= this.Rows; --index)
         {
-          ((IList<RowDefinition>) this._imageContainer.RowDefinitions).RemoveAt(index);
+          this._imageContainer.RowDefinitions.RemoveAt(index);
           this.KeepGridInSyncRow(index);
         }
       }
@@ -544,7 +540,7 @@ namespace Coding4Fun.Toolkit.Controls
         if (count2 >= this.Rows)
           return;
         for (int index = 0; index < this.Rows - count2; ++index)
-          ((ICollection<RowDefinition>) this._imageContainer.RowDefinitions).Add(new RowDefinition());
+          this._imageContainer.RowDefinitions.Add(new RowDefinition());
       }
     }
 

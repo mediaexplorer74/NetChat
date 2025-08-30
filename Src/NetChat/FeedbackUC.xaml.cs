@@ -30,19 +30,7 @@ namespace IGM.UI
 {
     public sealed partial class FeedbackUC : UserControl
     {
-        /*
-        [GeneratedCode("Microsoft.Windows.UI.Xaml.Build.Tasks", " 4.0.0.0")]
-        private ComboBox cbCommentType;
-        [GeneratedCode("Microsoft.Windows.UI.Xaml.Build.Tasks", " 4.0.0.0")]
-        private TextBox tbComment;
-        [GeneratedCode("Microsoft.Windows.UI.Xaml.Build.Tasks", " 4.0.0.0")]
-        private Button btnEmail;
-        [GeneratedCode("Microsoft.Windows.UI.Xaml.Build.Tasks", " 4.0.0.0")]
-        private Button btnReview;
-        [GeneratedCode("Microsoft.Windows.UI.Xaml.Build.Tasks", " 4.0.0.0")]
-        private bool _contentLoaded;
-        */
-
+       
         private string _SendToName { get; set; }
 
         private string _SendToAddress { get; set; }
@@ -50,9 +38,17 @@ namespace IGM.UI
         public FeedbackUC()
         {
             this.InitializeComponent();
-            ((ItemsControl)this.cbCommentType).put_ItemsSource((object)ClientData.Current.CommentTypes);
-            this._SendToName = "Weekysoft Studios";
-            this._SendToAddress = "developer@weekysoft.com";
+
+            if (ClientData.Current != null && ClientData.Current.CurrentRoom != null && ClientData.Current.MySelf != null)
+            {
+                this.cbCommentType.ItemsSource = (object)ClientData.Current.CommentTypes;
+            }
+            else
+            {
+                this.cbCommentType.ItemsSource = default;
+            }
+            this._SendToName = "ME";
+            this._SendToAddress = "ME@me_mail.commmm";
         }
 
         private async void btnEmail_Click(object sender, RoutedEventArgs e)
@@ -72,15 +68,15 @@ namespace IGM.UI
             if (((Selector)this.cbCommentType).SelectedValue.ToString()
                 == CommentType.LoveIt.GetDisplayName() && !Setting.Current.Rated)
             {
-                ((UIElement)this.btnReview).put_Visibility((Visibility)0);
-                ((UIElement)this.btnEmail).put_Visibility((Visibility)1);
-                ((Control)this.tbComment).put_IsEnabled(false);
+                ((UIElement)this.btnReview).Visibility = (Visibility)0;
+                ((UIElement)this.btnEmail).Visibility = (Visibility)1;
+                ((Control)this.tbComment).IsEnabled = false;
             }
             else
             {
-                ((UIElement)this.btnReview).put_Visibility((Visibility)1);
-                ((UIElement)this.btnEmail).put_Visibility((Visibility)0);
-                ((Control)this.tbComment).put_IsEnabled(true);
+                ((UIElement)this.btnReview).Visibility = (Visibility)1;
+                ((UIElement)this.btnEmail).Visibility = (Visibility)0;
+                ((Control)this.tbComment).IsEnabled = true;
             }
         }
 

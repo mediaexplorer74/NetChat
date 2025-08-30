@@ -28,24 +28,24 @@ namespace Coding4Fun.Toolkit.Controls
     public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof (Title), typeof (string), typeof (ToastPrompt), new PropertyMetadata((object) ""));
     public static readonly DependencyProperty MessageProperty = DependencyProperty.Register(nameof (Message), typeof (string), typeof (ToastPrompt), new PropertyMetadata((object) ""));
     public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof (ImageSource), typeof (ImageSource), typeof (ToastPrompt), new PropertyMetadata((object) null, new PropertyChangedCallback(ToastPrompt.OnImageSource)));
-    public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof (Stretch), typeof (Stretch), typeof (ToastPrompt), new PropertyMetadata((object) (Stretch) 0));
+    public static readonly DependencyProperty StretchProperty = DependencyProperty.Register(nameof (Stretch), typeof (Stretch), typeof (ToastPrompt), new PropertyMetadata((object) Stretch.None));
     public static readonly DependencyProperty ImageWidthProperty = DependencyProperty.Register(nameof (ImageWidth), typeof (double), typeof (ToastPrompt), new PropertyMetadata((object) double.NaN));
     public static readonly DependencyProperty ImageHeightProperty = DependencyProperty.Register(nameof (ImageHeight), typeof (double), typeof (ToastPrompt), new PropertyMetadata((object) double.NaN));
-    public static readonly DependencyProperty TextOrientationProperty = DependencyProperty.Register(nameof (TextOrientation), typeof (Orientation), typeof (ToastPrompt), new PropertyMetadata((object) (Orientation) 1));
-    public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Register(nameof (TextWrapping), typeof (TextWrapping), typeof (ToastPrompt), new PropertyMetadata((object) (TextWrapping) 1, new PropertyChangedCallback(ToastPrompt.OnTextWrapping)));
+    public static readonly DependencyProperty TextOrientationProperty = DependencyProperty.Register(nameof (TextOrientation), typeof (Orientation), typeof (ToastPrompt), new PropertyMetadata((object) Orientation.Vertical));
+    public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Register(nameof (TextWrapping), typeof (TextWrapping), typeof (ToastPrompt), new PropertyMetadata((object) TextWrapping.Wrap, new PropertyChangedCallback(ToastPrompt.OnTextWrapping)));
 
     public ToastPrompt()
     {
-      this.put_DefaultStyleKey((object) typeof (ToastPrompt));
+      this.DefaultStyleKey = typeof (ToastPrompt);
       this.IsAppBarVisible = true;
       this.IsBackKeyOverride = true;
       this.IsCalculateFrameVerticalOffset = true;
       this.IsOverlayApplied = false;
-      ((UIElement) this).put_ManipulationMode((ManipulationModes) 1);
+      ((UIElement)this).ManipulationMode = ManipulationModes.TranslateX;
       this.AnimationType = DialogService.AnimationTypes.SlideHorizontal;
-      WindowsRuntimeMarshal.AddEventHandler<ManipulationStartedEventHandler>(new Func<ManipulationStartedEventHandler, EventRegistrationToken>(((UIElement) this).add_ManipulationStarted), new Action<EventRegistrationToken>(((UIElement) this).remove_ManipulationStarted), new ManipulationStartedEventHandler(this.ToastPromptManipulationStarted));
-      WindowsRuntimeMarshal.AddEventHandler<ManipulationDeltaEventHandler>(new Func<ManipulationDeltaEventHandler, EventRegistrationToken>(((UIElement) this).add_ManipulationDelta), new Action<EventRegistrationToken>(((UIElement) this).remove_ManipulationDelta), new ManipulationDeltaEventHandler(this.ToastPromptManipulationDelta));
-      WindowsRuntimeMarshal.AddEventHandler<ManipulationCompletedEventHandler>(new Func<ManipulationCompletedEventHandler, EventRegistrationToken>(((UIElement) this).add_ManipulationCompleted), new Action<EventRegistrationToken>(((UIElement) this).remove_ManipulationCompleted), new ManipulationCompletedEventHandler(this.ToastPromptManipulationCompleted));
+      ((UIElement)this).ManipulationStarted += this.ToastPromptManipulationStarted;
+      ((UIElement)this).ManipulationDelta += this.ToastPromptManipulationDelta;
+      ((UIElement)this).ManipulationCompleted += this.ToastPromptManipulationCompleted;
       this.Opened += new EventHandler(this.ToastPromptOpened);
     }
 
@@ -56,7 +56,7 @@ namespace Coding4Fun.Toolkit.Controls
       this.ToastImage = this.GetTemplateChild("ToastImage") as Image;
       if (this.ToastImage != null && this.ImageSource != null)
       {
-        this.ToastImage.put_Source(this.ImageSource);
+        this.ToastImage.Source = this.ImageSource;
         this.SetImageVisibility(this.ImageSource);
       }
       this.SetTextOrientation(this.TextWrapping);
@@ -76,7 +76,7 @@ namespace Coding4Fun.Toolkit.Controls
       if (this._timer == null)
         return;
       this._timer.Stop();
-      this._timer = (DispatcherTimer) null;
+      this._timer = null;
     }
 
     private void ToastPromptManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -87,10 +87,10 @@ namespace Coding4Fun.Toolkit.Controls
     private void ToastPromptManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
     {
       TranslateTransform translate = this._translate;
-      translate.put_X(translate.X + e.Delta.Translation.X);
+      translate.X += e.Delta.Translation.X;
       if (this._translate.X >= 0.0)
         return;
-      this._translate.put_X(0.0);
+      ((TranslateTransform)this._translate).X = 0.0;
     }
 
     private void ToastPromptManipulationCompleted(
@@ -111,7 +111,7 @@ namespace Coding4Fun.Toolkit.Controls
       }
       else
       {
-        this._translate.put_X(0.0);
+        ((TranslateTransform)this._translate).X = 0.0;
         this.StartTimer();
       }
     }
@@ -136,14 +136,14 @@ namespace Coding4Fun.Toolkit.Controls
 
     private void SetImageVisibility(ImageSource source)
     {
-      ((UIElement) this.ToastImage).put_Visibility(source == null ? (Visibility) 1 : (Visibility) 0);
+      ((UIElement)this.ToastImage).Visibility = source == null ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private void SetTextOrientation(TextWrapping value)
     {
-      if (value != 2)
+      if (value == TextWrapping.NoWrap)
         return;
-      this.TextOrientation = (Orientation) 0;
+      this.TextOrientation = Orientation.Horizontal;
     }
 
     private void StartTimer()
@@ -151,10 +151,9 @@ namespace Coding4Fun.Toolkit.Controls
       if (this._timer == null)
       {
         DispatcherTimer dispatcherTimer = new DispatcherTimer();
-        dispatcherTimer.put_Interval(TimeSpan.FromMilliseconds((double) this.MillisecondsUntilHidden));
+        ((DispatcherTimer)dispatcherTimer).Interval = TimeSpan.FromMilliseconds((double) this.MillisecondsUntilHidden);
         this._timer = dispatcherTimer;
-        DispatcherTimer timer = this._timer;
-        WindowsRuntimeMarshal.AddEventHandler<EventHandler<object>>(new Func<EventHandler<object>, EventRegistrationToken>(timer.add_Tick), new Action<EventRegistrationToken>(timer.remove_Tick), new EventHandler<object>(this.TimerTick));
+        ((DispatcherTimer)this._timer).Tick += new EventHandler<object>(this.TimerTick);
       }
       this._timer.Start();
     }
@@ -169,7 +168,7 @@ namespace Coding4Fun.Toolkit.Controls
     private void SetRenderTransform()
     {
       this._translate = new TranslateTransform();
-      ((UIElement) this).put_RenderTransform((Transform) this._translate);
+      ((UIElement)this).RenderTransform = this._translate;
     }
 
     private static void OnTextWrapping(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -188,68 +187,68 @@ namespace Coding4Fun.Toolkit.Controls
 
     public int MillisecondsUntilHidden
     {
-      get => (int) ((DependencyObject) this).GetValue(ToastPrompt.MillisecondsUntilHiddenProperty);
+      get => (int) this.GetValue(ToastPrompt.MillisecondsUntilHiddenProperty);
       set
       {
-        ((DependencyObject) this).SetValue(ToastPrompt.MillisecondsUntilHiddenProperty, (object) value);
+        this.SetValue(ToastPrompt.MillisecondsUntilHiddenProperty, value);
       }
     }
 
     public bool IsTimerEnabled
     {
-      get => (bool) ((DependencyObject) this).GetValue(ToastPrompt.IsTimerEnabledProperty);
-      set => ((DependencyObject) this).SetValue(ToastPrompt.IsTimerEnabledProperty, (object) value);
+      get => (bool) this.GetValue(ToastPrompt.IsTimerEnabledProperty);
+      set => this.SetValue(ToastPrompt.IsTimerEnabledProperty, value);
     }
 
     public string Title
     {
-      get => (string) ((DependencyObject) this).GetValue(ToastPrompt.TitleProperty);
-      set => ((DependencyObject) this).SetValue(ToastPrompt.TitleProperty, (object) value);
+      get => (string) this.GetValue(ToastPrompt.TitleProperty);
+      set => this.SetValue(ToastPrompt.TitleProperty, value);
     }
 
     public string Message
     {
-      get => (string) ((DependencyObject) this).GetValue(ToastPrompt.MessageProperty);
-      set => ((DependencyObject) this).SetValue(ToastPrompt.MessageProperty, (object) value);
+      get => (string) this.GetValue(ToastPrompt.MessageProperty);
+      set => this.SetValue(ToastPrompt.MessageProperty, value);
     }
 
     public ImageSource ImageSource
     {
-      get => (ImageSource) ((DependencyObject) this).GetValue(ToastPrompt.ImageSourceProperty);
-      set => ((DependencyObject) this).SetValue(ToastPrompt.ImageSourceProperty, (object) value);
+      get => (ImageSource) this.GetValue(ToastPrompt.ImageSourceProperty);
+      set => this.SetValue(ToastPrompt.ImageSourceProperty, value);
     }
 
     public Stretch Stretch
     {
-      get => (Stretch) ((DependencyObject) this).GetValue(ToastPrompt.StretchProperty);
-      set => ((DependencyObject) this).SetValue(ToastPrompt.StretchProperty, (object) value);
+      get => (Stretch) this.GetValue(ToastPrompt.StretchProperty);
+      set => this.SetValue(ToastPrompt.StretchProperty, value);
     }
 
     public double ImageWidth
     {
-      get => (double) ((DependencyObject) this).GetValue(ToastPrompt.ImageWidthProperty);
-      set => ((DependencyObject) this).SetValue(ToastPrompt.ImageWidthProperty, (object) value);
+      get => (double) this.GetValue(ToastPrompt.ImageWidthProperty);
+      set => this.SetValue(ToastPrompt.ImageWidthProperty, value);
     }
 
     public double ImageHeight
     {
-      get => (double) ((DependencyObject) this).GetValue(ToastPrompt.ImageHeightProperty);
-      set => ((DependencyObject) this).SetValue(ToastPrompt.ImageHeightProperty, (object) value);
+      get => (double) this.GetValue(ToastPrompt.ImageHeightProperty);
+      set => this.SetValue(ToastPrompt.ImageHeightProperty, value);
     }
 
     public Orientation TextOrientation
     {
-      get => (Orientation) ((DependencyObject) this).GetValue(ToastPrompt.TextOrientationProperty);
+      get => (Orientation) this.GetValue(ToastPrompt.TextOrientationProperty);
       set
       {
-        ((DependencyObject) this).SetValue(ToastPrompt.TextOrientationProperty, (object) value);
+        this.SetValue(ToastPrompt.TextOrientationProperty, value);
       }
     }
 
     public TextWrapping TextWrapping
     {
-      get => (TextWrapping) ((DependencyObject) this).GetValue(ToastPrompt.TextWrappingProperty);
-      set => ((DependencyObject) this).SetValue(ToastPrompt.TextWrappingProperty, (object) value);
+      get => (TextWrapping) this.GetValue(ToastPrompt.TextWrappingProperty);
+      set => this.SetValue(ToastPrompt.TextWrappingProperty, value);
     }
   }
 }

@@ -20,7 +20,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     public RectangularButton()
     {
-      ((Control) this).put_DefaultStyleKey((object) typeof (RectangularButton));
+      this.DefaultStyleKey = typeof (RectangularButton);
     }
 
     private void ApplyingTemplate()
@@ -29,28 +29,28 @@ namespace Coding4Fun.Toolkit.Controls
 
     private bool IsContentEmpty(object content) => content == null;
 
-    protected virtual void OnContentChanged(object oldContent, object newContent)
+    protected override void OnContentChanged(object oldContent, object newContent)
     {
-      ((ContentControl) this).OnContentChanged(oldContent, newContent);
+      base.OnContentChanged(oldContent, newContent);
       if (oldContent == newContent)
         return;
-      this.AppendCheck(((ContentControl) this).Content);
-      ButtonBaseHelper.ApplyForegroundToFillBinding(((Control) this).GetTemplateChild("ContentBody") as ContentControl);
+      this.AppendCheck(this.Content);
+      ButtonBaseHelper.ApplyForegroundToFillBinding(this.GetTemplateChild("ContentBody") as ContentControl);
     }
 
     private void AppendCheck(object content)
     {
       if (!this.IsContentEmpty(content))
         return;
-      ((ContentControl) this).put_Content((object) ButtonBaseHelper.CreateXamlCheck((FrameworkElement) this));
+      this.Content = ButtonBaseHelper.CreateXamlCheck(this);
     }
 
     protected override void OnApplyTemplate()
     {
       this.ApplyingTemplate();
-      this.AppendCheck(((ContentControl) this).Content);
-      ButtonBaseHelper.ApplyForegroundToFillBinding(((Control) this).GetTemplateChild("ContentBody") as ContentControl);
-      ButtonBaseHelper.ApplyTitleOffset(((Control) this).GetTemplateChild("ContentTitle") as ContentControl);
+      this.AppendCheck(this.Content);
+      ButtonBaseHelper.ApplyForegroundToFillBinding(this.GetTemplateChild("ContentBody") as ContentControl);
+      ButtonBaseHelper.ApplyTitleOffset(this.GetTemplateChild("ContentTitle") as ContentControl);
       base.OnApplyTemplate();
     }
 

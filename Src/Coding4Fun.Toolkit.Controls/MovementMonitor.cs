@@ -29,16 +29,13 @@ namespace Coding4Fun.Toolkit.Controls
     public void MonitorControl(Panel panel)
     {
       Rectangle rectangle = new Rectangle();
-      ((Shape) rectangle).put_Fill((Brush) new SolidColorBrush(Color.FromArgb((byte) 0, (byte) 0, (byte) 0, (byte) 0)));
+      ((Shape)rectangle).Fill = new SolidColorBrush(Color.FromArgb((byte) 0, (byte) 0, (byte) 0, (byte) 0));
       this.Monitor = rectangle;
-      ((DependencyObject) this.Monitor).SetValue(Grid.RowSpanProperty, (object) 2147483646);
-      ((DependencyObject) this.Monitor).SetValue(Grid.ColumnSpanProperty, (object) 2147483646);
-      Rectangle monitor1 = this.Monitor;
-      WindowsRuntimeMarshal.AddEventHandler<PointerEventHandler>(new Func<PointerEventHandler, EventRegistrationToken>(((UIElement) monitor1).add_PointerPressed), new Action<EventRegistrationToken>(((UIElement) monitor1).remove_PointerPressed), new PointerEventHandler(this.Monitor_PointerPressed));
-      Rectangle monitor2 = this.Monitor;
-      WindowsRuntimeMarshal.AddEventHandler<PointerEventHandler>(new Func<PointerEventHandler, EventRegistrationToken>(((UIElement) monitor2).add_PointerReleased), new Action<EventRegistrationToken>(((UIElement) monitor2).remove_PointerReleased), new PointerEventHandler(this.Monitor_PointerReleased));
-      Rectangle monitor3 = this.Monitor;
-      WindowsRuntimeMarshal.AddEventHandler<PointerEventHandler>(new Func<PointerEventHandler, EventRegistrationToken>(((UIElement) monitor3).add_PointerMoved), new Action<EventRegistrationToken>(((UIElement) monitor3).remove_PointerMoved), new PointerEventHandler(this.Monitor_PointerMoved));
+      this.Monitor.SetValue(Grid.RowSpanProperty, 2147483646);
+      this.Monitor.SetValue(Grid.ColumnSpanProperty, 2147483646);
+      ((UIElement)this.Monitor).PointerPressed += this.Monitor_PointerPressed;
+      ((UIElement)this.Monitor).PointerReleased += this.Monitor_PointerReleased;
+      ((UIElement)this.Monitor).PointerMoved += this.Monitor_PointerMoved;
       ((ICollection<UIElement>) panel.Children).Add((UIElement) this.Monitor);
     }
 
@@ -51,7 +48,7 @@ namespace Coding4Fun.Toolkit.Controls
           X = position.X,
           Y = position.Y
         });
-      e.put_Handled(true);
+      ((PointerRoutedEventArgs)e).Handled = true;
     }
 
     private void Monitor_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -65,7 +62,7 @@ namespace Coding4Fun.Toolkit.Controls
           X = this._xOffsetStartValue,
           Y = this._yOffsetStartValue
         });
-      e.put_Handled(true);
+      ((PointerRoutedEventArgs)e).Handled = true;
     }
 
     private void Monitor_PointerMoved(object sender, PointerRoutedEventArgs e)
@@ -79,7 +76,7 @@ namespace Coding4Fun.Toolkit.Controls
           X = position.X,
           Y = position.Y
         });
-      e.put_Handled(true);
+      ((PointerRoutedEventArgs)e).Handled = true;
     }
   }
 }

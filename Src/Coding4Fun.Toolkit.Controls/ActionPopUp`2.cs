@@ -19,7 +19,7 @@ namespace Coding4Fun.Toolkit.Controls
 
     protected override void OnApplyTemplate()
     {
-      this.Focus((FocusState) 3);
+      this.Focus(FocusState.Programmatic);
       base.OnApplyTemplate();
       this.ActionButtonArea = this.GetTemplateChild("actionButtonArea") as Panel;
       this.SetButtons();
@@ -38,7 +38,7 @@ namespace Coding4Fun.Toolkit.Controls
       }
       if (!flag)
         return;
-      ((FrameworkElement) this.ActionButtonArea).put_Margin(new Thickness());
+      ((FrameworkElement) this.ActionButtonArea).Margin = new Thickness();
     }
 
     private static void OnActionPopUpButtonsChanged(
