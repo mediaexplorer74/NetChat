@@ -43,18 +43,10 @@ namespace IGM.UI
                 PeerSynElapsedHandler(timer);
             }, TimeSpan.FromSeconds((double)Member.RenewTime));
 
-            // TODO
-            if (ClientData.Current != null && ClientData.Current.CurrentRoom != null && ClientData.Current.MySelf != null)
-            {
-                ClientData.Current.CurrentRoom.Enter(ClientData.Current.MySelf);
-                this.UpdateRoomSettings();
-                ClientData.Current.CurrentSite.RoomSwitched += new EventHandler<RoomEventArgs>(this.RoomSwitched);
-            }
-            else
-            {
-                // Handle the null case, e.g., log an error or throw a more informative exception
-                Debug.WriteLine("[error] AttendeePanel: ClientData.Current is null");
-            }
+            
+            ClientData.Current.CurrentRoom.Enter(ClientData.Current.MySelf);
+            this.UpdateRoomSettings();
+            ClientData.Current.CurrentSite.RoomSwitched += new EventHandler<RoomEventArgs>(this.RoomSwitched);           
         }
 
         private async void UpdateRoomSettings()
@@ -111,14 +103,11 @@ namespace IGM.UI
 
         protected async void PeerSynElapsedHandler(ThreadPoolTimer timer)
         {
-            // TODO
-            if (ClientData.Current != null && ClientData.Current.CurrentRoom != null && ClientData.Current.MySelf != null)
-            {
-                if (!ClientData.Current.ChatMessaging.IsBroadcastSetup)
-                    return;
-                ClientData.Current.ChatMessaging.Ack(ClientData.Current.CurrentRoom.RoomId);
-            }
-
+            if (!ClientData.Current.ChatMessaging.IsBroadcastSetup)
+                return;
+            
+            ClientData.Current.ChatMessaging.Ack(ClientData.Current.CurrentRoom.RoomId);
+            
             UICore.UpdateUIThread(() =>
             {
                 // Handle peer sync elapsed logic here

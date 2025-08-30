@@ -28,18 +28,26 @@ Now available in all major platforms
 
 ![](/Images/sshot02.png)
 
+![](/Images/sshot03.png)
+
+![](/Images/sshot04.png)
+
+
 ## Status
 - Decomp. + minimal RnD (app compiled, app started, but app logics damaged)
 
+
 ## To-dos
-- Analyze and fix XAML syntax issues in MainPage.xaml - convert decompiled XAML to proper UWP format [ ]
-- Fix ChatBubblePanel.xaml XAML syntax to properly support UWP binding and layout [ ]
-- Clean up and fix ChatBubblePanel.xaml.cs code - remove decompiled artifacts and fix proper UWP event handling [ ]
-- Implement modern chat bubble UI design with rectangular chat bubbles as requested [ ]
-- Update Package.appxmanifest with proper UWP capabilities for network communication [ ]
-- Fix and update all other XAML files to proper UWP syntax [ ]
-- Test the application build and fix any remaining compilation issues [ ]
-- Verify network connectivity and chat functionality works properly in UWP environment [ ]
+- Analyze and fix XAML syntax issues in MainPage.xaml - convert decompiled XAML to proper UWP format [x]
+- Fix ChatBubblePanel.xaml XAML syntax to properly support UWP binding and layout [x]
+- Clean up and fix ChatBubblePanel.xaml.cs code - remove decompiled artifacts and fix proper UWP event handling [x]
+- Implement modern chat bubble UI design with rectangular chat bubbles as requested [x]
+- Update Package.appxmanifest with proper UWP capabilities for network communication [x]
+- Fix and update all other XAML files to proper UWP syntax [x]
+- Test the application build and fix any remaining compilation issues [x]
+- Verify network connectivity and chat functionality works properly in UWP environment [?]
+- Try to connect 2nd device (Windows Phone?) [ ]
+
 
 ## References
 - https://apps.microsoft.com/detail/9wzdncrd2bw5?hl=en-US&gl=US
@@ -50,6 +58,9 @@ Now available in all major platforms
 ## .
 As is. No support. RnD only. DIY!
 
+
 ## ..
 
-[m][e] 2024--2025
+[m][e] 2025
+
+![](/Images/footer.png)

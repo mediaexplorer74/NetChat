@@ -29,14 +29,10 @@ namespace IGM.UI
         public MainPage()
         {
             this.InitializeComponent();
-
-            // TODO
-            if (ClientData.Current != null && ClientData.Current.CurrentRoom != null && ClientData.Current.MySelf != null)
-            {
-                this.SetupRoom(ClientData.Current.CurrentRoom);
-                this.piRooms.DataContext = (object)ClientData.Current.CurrentSite.ActiveRooms;
-                ClientData.Current.CurrentSite.RoomSwitching += new EventHandler<RoomEventArgs>(this.RoomSwitching);
-            }
+                        
+            this.SetupRoom(ClientData.Current.CurrentRoom);
+            this.piRooms.DataContext = (object)ClientData.Current.CurrentSite.ActiveRooms;
+            ClientData.Current.CurrentSite.RoomSwitching += new EventHandler<RoomEventArgs>(this.RoomSwitching);
             
             this.NavigationCacheMode = NavigationCacheMode.Required;
         }

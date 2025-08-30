@@ -1,4 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
+﻿﻿// Decompiled with JetBrains decompiler
 // Type: weekysoft.store.Storage.ClientData
 // Assembly: weekysoft.store, Version=2.0.6272.32043, Culture=neutral, PublicKeyToken=null
 // MVID: 5346AFDA-B762-4A4C-8E26-6978C993B771
@@ -40,7 +40,9 @@ namespace weekysoft.store.Storage
         if (this._CurrentRoom == null)
         {
           this._CurrentRoom = new Room(SuperChannel.Lobby.GetKey(), this.ChatLabel.LobbyLabel, "secured", 250, this.ChatMessaging);
-          this.CurrentSite.Enter(this._CurrentRoom);
+          // Ensure CurrentSite is initialized before calling Enter
+          var site = this.CurrentSite;
+          site.Enter(this._CurrentRoom);
           if (Setting.Current.IsAssistantEnabled)
             this._CurrentRoom.Enter(this.LobbyBot);
         }

@@ -15,6 +15,15 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+// Added namespaces for initialization
+using IGM.Library;
+using weekysoft.store.Messaging;
+using weekysoft.store.Storage;
+using weekysoft.store.ChatRoom;
+using weekysoft.store.Chatting;
+using weekysoft.store.Enums;
+using weekysoft.store.Interfaces;
+
 namespace IGM.UI
 {
     /// <summary>
@@ -37,8 +46,11 @@ namespace IGM.UI
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
+            // Initialize the ClientData and messaging system
+            await InitializeClientDataAsync();
+
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -74,6 +86,71 @@ namespace IGM.UI
         }
 
         /// <summary>
+        /// Initialize the ClientData and messaging system
+        /// </summary>
+        private async System.Threading.Tasks.Task InitializeClientDataAsync()
+        {
+            try
+            {
+                // Check if ClientData is already initialized
+                if (ClientData.Current != null)
+                    return;
+
+                // Initialize Setting.Current if not already initialized
+                if (Setting.Current == null)
+                {
+                    var localSetting = new LocalSetting(false);
+                    Setting.Current = new Setting(localSetting);
+                    Setting.Current.Initialize();
+                }
+
+                // Initialize UISetting.Current if not already initialized
+                if (UISetting.Current != null && !UISetting.Current.IsInitialized)
+                {
+                    await UISetting.Current.Initialize();
+                }
+
+                // Create the UWP messaging system instead of UdpMessaging
+                var messaging = new UWPMessaging(
+                    sendingPort: "22112",
+                    receivingPorts: new string[] { "22111" },
+                    broadcastAddress: "255.255.255.255",
+                    ignoreSelf: true
+                );
+
+                // Initialize ClientData with the messaging system
+                ClientData.Current = new ClientData(messaging);
+
+                // Initialize the IP address manager
+                var ipManager = new IPAddressManager();
+                ClientData.Current.IPManager = ipManager;
+
+                // Initialize the messaging system
+                await messaging.Initialize(ipManager);
+
+                // Ensure ChatLabel is initialized before accessing CurrentRoom
+                var chatLabel = ClientData.Current.ChatLabel;
+                
+                // Ensure MySelf is initialized
+                var myself = ClientData.Current.MySelf;
+                
+                // Ensure CurrentSite is initialized
+                var currentSite = ClientData.Current.CurrentSite;
+                
+                // Now we can safely access CurrentRoom
+                var currentRoom = ClientData.Current.CurrentRoom;
+                
+                System.Diagnostics.Debug.WriteLine("ClientData initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                System.Diagnostics.Debug.WriteLine($"Error initializing ClientData: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Exception stack trace: {ex.StackTrace}");
+            }
+        }
+
+        /// <summary>
         /// Invoked when Navigation to a certain page fails
         /// </summary>
         /// <param name="sender">The Frame which failed navigation</param>
@@ -93,7 +170,7 @@ namespace IGM.UI
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+            
             deferral.Complete();
         }
     }

@@ -42,21 +42,17 @@ namespace IGM.UI
                 SynElapsedHandler(timer);
             }, TimeSpan.FromSeconds((double)Member.RenewTime));
 
-            // TODO: del if ... else (nulled ClientData.Current problem, heh!)
-            if (ClientData.Current != null && ClientData.Current.CurrentRoom != null && ClientData.Current.MySelf != null)
-            {
-                this.DataContext = (object)ClientData.Current.CurrentSite.ActiveRooms;
+            
+            this.DataContext = (object)ClientData.Current.CurrentSite.ActiveRooms;
 
+            if (ClientData.Current.ChatMessaging != null)
+            {
                 ClientData.Current.ChatMessaging.SiteMessageReceived
                     += new EventHandler<MessageEventArgs>(this.SiteMessageReceived);
+            }
 
-                this.btnNewTemporaryRoom.Content = (object)ClientData.Current.ChatLabel.NewTemporaryRoomLabel;
-            }
-            else
-            {
-                // Handle the null case, e.g., log an error or throw a more informative exception
-                Debug.WriteLine("[error] RoomPanel: ClientData.Current is null");
-            }
+            this.btnNewTemporaryRoom.Content = (object)ClientData.Current.ChatLabel.NewTemporaryRoomLabel;
+           
         }
 
         private async void SiteMessageReceived(object sender, MessageEventArgs e)
@@ -120,6 +116,16 @@ namespace IGM.UI
 
         private void btnNewTemporaryRoom_Click(object sender, RoutedEventArgs e)
         {
+            // Add null checks
+            if (ClientData.Current == null || 
+                ClientData.Current.CurrentSite == null || 
+                ClientData.Current.ChatMessaging == null ||
+                ClientData.Current.MySelf == null)
+            {
+                Debug.WriteLine("[error] btnNewTemporaryRoom_Click: ClientData not properly initialized");
+                return;
+            }
+
             if (ClientData.Current.CurrentSite.ReachedTempRoomLimit())
                 return;
             Util.LogEvent("Temporary Room Created");
@@ -127,43 +133,63 @@ namespace IGM.UI
             ClientData.Current.CurrentSite.Enter(temporaryRoom);
             ClientData.Current.CurrentSite.SwitchRoom(temporaryRoom, ClientData.Current.MySelf);
             ClientData.Current.CurrentSite.AdvertiseRoom(temporaryRoom);
-            ((Selector)this.lbRooms).SelectedItem = (object)temporaryRoom;
+            
+            if (this.lbRooms != null)
+            {
+                ((Selector)this.lbRooms).SelectedItem = (object)temporaryRoom;
+            }
+            
             if (!ClientData.Current.CurrentSite.ReachedTempRoomLimit())
                 return;
-            ((Control)this.btnNewTemporaryRoom).IsEnabled = false;
-            ((ContentControl)this.btnNewTemporaryRoom).Content = (object)ClientData.Current.ChatLabel.MaxRoomLabel;
+                
+            if (this.btnNewTemporaryRoom != null)
+            {
+                ((Control)this.btnNewTemporaryRoom).IsEnabled = false;
+                ((ContentControl)this.btnNewTemporaryRoom).Content = (object)ClientData.Current.ChatLabel.MaxRoomLabel;
+            }
         }
 
         protected async void SynElapsedHandler(ThreadPoolTimer timer)
         {
-            //TODO
-            if (ClientData.Current != null && ClientData.Current.CurrentRoom != null && ClientData.Current.MySelf != null)
+            // Add null checks
+            if (ClientData.Current == null || 
+                ClientData.Current.CurrentRoom == null || 
+                ClientData.Current.MySelf == null ||
+                ClientData.Current.ChatMessaging == null)
             {
-                if (!ClientData.Current.ChatMessaging.IsBroadcastSetup)
-                    return;
-
-                ClientData.Current.CurrentSite.AdvertiseRooms();
+                return;
             }
+
             
+            if (!ClientData.Current.ChatMessaging.IsBroadcastSetup)
+                return;
+
+            ClientData.Current.CurrentSite.AdvertiseRooms();
+
             UICore.UpdateUIThread(() =>
             {
                 // Handle sync elapsed logic here
             }, ((DependencyObject)this).Dispatcher);
 
-            //TODO
-            if (ClientData.Current != null && ClientData.Current.CurrentRoom != null && ClientData.Current.MySelf != null)
-            {
-                if (ClientData.Current.CurrentRoom.Host == null 
-                    || !(ClientData.Current.CurrentRoom.Host.IPAddress == ClientData.Current.MySelf.IPAddress))
-                    return;
+            if (ClientData.Current.CurrentRoom.Host == null 
+                || !(ClientData.Current.CurrentRoom.Host.IPAddress == ClientData.Current.MySelf.IPAddress))
+                return;
 
-                ClientData.Current.CurrentRoom.SendRoomUpdate();
-            }
+            ClientData.Current.CurrentRoom.SendRoomUpdate();
         }
 
         private async void lbRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!(((Selector)this.lbRooms).SelectedItem is Room selectedItem) || ClientData.Current.CurrentRoom.Equals((object)selectedItem))
+            // Add null checks
+            if (ClientData.Current == null || 
+                ClientData.Current.CurrentRoom == null || 
+                ClientData.Current.MySelf == null ||
+                ClientData.Current.CurrentSite == null)
+            {
+                return;
+            }
+
+            if (!(((Selector)this.lbRooms)?.SelectedItem is Room selectedItem) || ClientData.Current.CurrentRoom.Equals((object)selectedItem))
                 return;
             ClientData.Current.CurrentSite.SwitchRoom(selectedItem, ClientData.Current.MySelf);
         }

@@ -149,6 +149,7 @@
     <Compile Include="UIBinder.cs" />
     <Compile Include="UICore.cs" />
     <Compile Include="UISetting.cs" />
+    <Compile Include="UWPMessaging.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
